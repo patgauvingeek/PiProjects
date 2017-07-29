@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE database SYSTEM "litesql.dtd"> 
+<database name="PiAlarm" namespace="db">
+  <object name="Zone">
+    <field name="name" type="string" length="64" />
+  </object>
+  <object name="Sensor">
+    <field name="name" type="string" length="64" />
+    <field name="gpio" type="string" />
+    <field name="kind" type="integer">
+      <value name="Unspecified" value="0" />
+      <value name="Door" value="1" />
+      <value name="Window" value="2" />
+      <value name="Motion" value="3" />
+      <value name="Button" value="4" />
+    </field>
+    <index unique="true">
+      <indexfield name="gpio"/>
+    </index>
+  </object>
+  <relation>
+    <relate object="Sensor" handle="zone" />
+    <relate object="Zone" handle="sensors" limit="one" />        
+  </relation>
+
+  <object name="Event">
+    <field name="date" type="datetime" />
+    <field name="trigger" type="integer">
+      <value name="Unspecified" value="0" />
+      <value name="DoorOpened" value="1"/>
+      <value name="DoorClosed" value="2"/>
+      <value name="WindowOpened" value="3"/>
+      <value name="WindowClosed" value="4"/>
+      <value name="MotionDetected" value="5"/>
+      <value name="SystemStarted" value="6" />
+      <value name="SystemStopped" value="7" />
+      <value name="SystemArming" value="8"/>
+      <value name="SystemArmed" value="9"/>
+      <value name="SystemUnarmed" value="10"/>
+      <value name="SystemError" value="11"/>
+    </field>
+  </object>
+  <relation>
+    <relate object="Sensor" handle="events" limit="one" />
+    <relate object="Event" handle="sensor" />
+  </relation>
+
+  <object name="Alarm">
+    <field name="date" type="datetime" />
+    <field name="note" type="string" length="512" />
+  </object>
+  <relation unidir="true">
+    <relate object="Alarm" handle="event" limit="one" />
+    <relate object="Event" limit="one" />        
+  </relation>
+
+  <object name="ElectronicalAlarmNotifier">
+    <field name="name" type="string" length="64" />
+    <field name="gpio" type="string" />
+  </object>
+
+  <object name="Log">
+    <field name="date" type="datetime" />
+    <field name="method" type="string" length="64" />
+    <field name="what" type="string" length="512" />
+    <field name="severity" type="integer">
+      <value name="Unspecified" value="0" />
+      <value name="Trace" value="1"/>
+      <value name="Debug" value="2"/>
+      <value name="Info" value="3"/>
+      <value name="Warning" value="4"/>
+      <value name="Error" value="5"/>
+    </field>
+  </object>
+</database>

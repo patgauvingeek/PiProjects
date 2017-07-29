@@ -1,0 +1,13 @@
+install dependencies
+--------------------
+sudo apt-get install sqlite3 libsqlite3-dev expat libexpat1 libexpat1-dev [sqlite3-doc]
+
+install litesql
+---------------
+./configure
+make
+sudo make install
+
+update shared libraries 
+-----------------------
+sudo ldconfig -v
