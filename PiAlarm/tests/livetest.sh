@@ -3,6 +3,15 @@
 echo exporting lib
 export LD_LIBRARY_PATH=/home/patrick/Projects/PiProjects/lib
 
+echo exporting path
+dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export PATH=$dir/bin:$PATH
+
+echo testing stty override
+stty first test !!
+cat stty_params.txt
+stty second test !!
+cat stty_params.txt
 
 echo Init Database and GPIO
 if [ -f pialarm.db ]; then
