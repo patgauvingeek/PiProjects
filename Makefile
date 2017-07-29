@@ -4,6 +4,10 @@ PROJECTS := libSimOn PiAlarm PiMorse PiEncoder
 
 all: $(PROJECTS)
 
+PiEncoder: libSimOn 
+		@echo "=== PiEncoder ==="
+		@$(MAKE) -C PiEncoder --no-print-directory
+
 PiMorse: libSimOn
 		@echo "=== PiMorse ==="
 		@$(MAKE) -C PiMorse --no-print-directory
