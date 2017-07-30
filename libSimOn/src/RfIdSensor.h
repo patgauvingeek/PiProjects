@@ -9,8 +9,10 @@ namespace SimOn
   class RfIdSensor
   {
     public:
-      RfIdSensor(std::string const & device, int baudRate);
+      RfIdSensor();
       virtual ~RfIdSensor();
+
+      bool read(std::string & data) const;
 
     private:
       RfIdSensorImpl * const mImplementation;

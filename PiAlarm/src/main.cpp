@@ -10,6 +10,7 @@
 
 #include "AlarmSystem.h"
 #include "RealTimeApplication.h"
+#include "RfIdSensor.h"
 
 const int INVALID_ARGUMENTS = 1;
 const int NOT_SUPPORTED_DATABASE = 2;
@@ -57,6 +58,41 @@ std::string findInMap(std::map<int, std::string> map, int key)
     wStream << "<" << key << ">";
     return wStream.str();
   }
+}
+
+int addUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
+{
+  if (args.size() != 3)
+  {
+    return INVALID_ARGUMENTS;
+  }
+  db::User wUser(*db);  
+  wUser.name = args[2];
+  
+  std::cout << "Scan RF ID !" << std::endl;
+  SimOn::RfIdSensor wRfIdSensor;
+  std::string wRfId;
+  while (wRfIdSensor.read(wRfId) == false)
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+  std::cout << "ID detected :" << wRfId << std::endl;
+  wUser.rfid = wRfId;
+  wUser.update();
+
+  return 0;
+}
+
+int listUsers(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
+{
+  auto wUsers = litesql::select<db::User>(*db)
+    .all();
+
+  for (auto &wUser : wUsers)
+  {
+    std::cout << wUser.name << std::endl;
+  }
+  return 0;
 }
 
 int addSensor(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
@@ -202,7 +238,9 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 
 typedef std::function<int(const std::vector<std::string>&, std::shared_ptr<db::PiAlarm>)> Command;
 
-static std::map<std::string, Command> COMMANDS = { 
+static std::map<std::string, Command> COMMANDS = {
+  { "users.add", &addUser},
+  { "users.list", &listUsers},
   { "sensors.add", &addSensor },
   { "sensors.list", &listSensors },
   { "events.list", &listEvents },
