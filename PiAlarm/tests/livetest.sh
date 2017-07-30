@@ -19,6 +19,11 @@ if [ -f pialarm.db ]; then
 fi
 
 ./../../bin/PiAlarm users.add "Patrick"
+actual_stty_params=$(cat stty_params)
+expected_stty_params="-F ./dev/ttyAMA0 sane raw pass8 -echo -hupcl clocal 9600"
+if [ "$expected_stty_params" != "$actual_stty_params" ]; then
+  (>&2 echo "<ERROR> configuring baud rate")
+fi
 
 ./../../bin/PiAlarm sensors.add "Main Entrance" 0 door
 ./creategpiofiles.sh 0
