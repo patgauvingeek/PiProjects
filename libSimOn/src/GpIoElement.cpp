@@ -26,7 +26,6 @@ namespace SimOn
           throw std::runtime_error(msg.str());
         }
         fileStream << data;
-        fileStream.close();
       }
 
       void readData(std::string filename, std::string & data, std::string action) const
@@ -39,7 +38,6 @@ namespace SimOn
           throw std::runtime_error(msg.str());
         }
         fileStream >> data;
-        fileStream.close();
       }
 
     public:
