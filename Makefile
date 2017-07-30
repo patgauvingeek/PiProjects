@@ -31,4 +31,4 @@ remove:
 
 update: clean
 		@echo "Updating pi..."
-		@scp -r ../PiProjects pi@192.168.0.105:/home/pi
+		@scp -r ../PiProjects pi@192.168.0.108:/home/pi

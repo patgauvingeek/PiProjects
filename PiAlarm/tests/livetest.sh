@@ -18,6 +18,8 @@ if [ -f pialarm.db ]; then
   rm pialarm.db
 fi
 
+./../../bin/PiAlarm users.add "Patrick"
+
 ./../../bin/PiAlarm sensors.add "Main Entrance" 0 door
 ./creategpiofiles.sh 0
 
