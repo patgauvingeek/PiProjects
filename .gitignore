@@ -4,4 +4,5 @@ obj/
 */db/*
 pialarm.db
 gpio
-stty_params
+*/tests/stty_params
+*/tests/tty

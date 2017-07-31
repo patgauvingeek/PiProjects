@@ -7,6 +7,9 @@
     <index unique="true">
       <indexfield name="name"/>
     </index>
+    <index unique="true">
+      <indexfield name="rfid"/>
+    </index>
   </object>
   <object name="Zone">
     <field name="name" type="string" length="64" />

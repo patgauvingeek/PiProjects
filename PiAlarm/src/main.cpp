@@ -69,14 +69,14 @@ int addUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> d
   db::User wUser(*db);  
   wUser.name = args[2];
   
-  std::cout << "Scan RF ID !" << std::endl;
+  std::cout << "Please, scan RF ID for " << args[2] << "... ";
   SimOn::RfIdSensor wRfIdSensor;
   std::string wRfId;
   while (wRfIdSensor.read(wRfId) == false)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
-  std::cout << "ID detected :" << wRfId << std::endl;
+  std::cout << wRfId << std::endl;
   wUser.rfid = wRfId;
   wUser.update();
 

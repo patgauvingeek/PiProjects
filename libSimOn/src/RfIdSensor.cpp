@@ -16,7 +16,7 @@ namespace SimOn
 #ifdef __arm__
       const std::string DEVICE = "/dev/ttyAMA0";
 #else
-      const std::string DEVICE = "./dev/ttyAMA0";
+      const std::string DEVICE = "./tty";
 #endif
       const int DEVICE_BAUD_RATE = 9600;
 
