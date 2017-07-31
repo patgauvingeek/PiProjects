@@ -11,8 +11,8 @@ namespace SimOn
   {
     private:
     
-      // RMD6300 device is "/dev/ttyAMA0"
-      // RMD6300 Baud Rate is 9600
+      // RDM6300 device is "/dev/ttyAMA0"
+      // RDM6300 Baud Rate is 9600
 #ifdef __arm__
       const std::string DEVICE = "/dev/ttyAMA0";
 #else
