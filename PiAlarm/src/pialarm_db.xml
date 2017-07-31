@@ -2,8 +2,11 @@
 <!DOCTYPE database SYSTEM "litesql.dtd"> 
 <database name="PiAlarm" namespace="db">
   <object name="User">
-    <field name="name" type="string" length="64" />
+    <field name="name" type="string" length="256" />
     <field name="rfid" type="string" length="10" />
+    <index unique="true">
+      <indexfield name="name"/>
+    </index>
   </object>
   <object name="Zone">
     <field name="name" type="string" length="64" />

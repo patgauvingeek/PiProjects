@@ -1,4 +1,4 @@
-PROJECTS := libSimOn PiAlarm PiMorse PiEncoder
+PROJECTS := libSimOn PiAlarm PiMorse
 
 .PHONY: all $(PROJECTS)
 
@@ -31,4 +31,4 @@ remove:
 
 update: clean
 		@echo "Updating pi..."
-		@scp -r ../PiProjects pi@192.168.0.108:/home/pi
+		@scp -r libSimOn PiAlarm PiMorse pi@192.168.0.8:/home/pi/PiProjects

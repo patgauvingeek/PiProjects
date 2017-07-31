@@ -90,7 +90,7 @@ int listUsers(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm>
 
   for (auto &wUser : wUsers)
   {
-    std::cout << wUser.name << std::endl;
+    std::cout << wUser.name << ":" << wUser.rfid << std::endl;
   }
   return 0;
 }
