@@ -29,6 +29,10 @@ install: all
 remove:
 		@echo "not implemented yet"
 
+tests: all
+		@echo "Running tests"
+		@cd ./PiAlarm/tests; ./livetest.sh
+
 update: clean
 		@echo "Updating pi..."
 		@scp -r libSimOn PiAlarm PiMorse pi@192.168.0.8:/home/pi/PiProjects
