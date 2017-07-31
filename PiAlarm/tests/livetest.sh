@@ -23,6 +23,8 @@ fi
 ./../../bin/PiAlarm users.add "Josée"
 echo "000000000000" > ./tty
 ./../../bin/PiAlarm users.add "Patrick"
+./../../bin/PiAlarm users.add "Josée"
+./../../bin/PiAlarm users.delete "Josée"
 echo
 echo Users
 ./../../bin/PiAlarm users.list

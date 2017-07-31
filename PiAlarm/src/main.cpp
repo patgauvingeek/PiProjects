@@ -95,6 +95,14 @@ int listUsers(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm>
   return 0;
 }
 
+int deleteUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
+{
+  auto wUsers = litesql::select<db::User>(*db, db::User::Name == args[2])
+    .one();
+  wUsers.del();
+  return 0;
+}
+
 int addSensor(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
   if (args.size() != 5)
@@ -241,6 +249,7 @@ typedef std::function<int(const std::vector<std::string>&, std::shared_ptr<db::P
 static std::map<std::string, Command> COMMANDS = {
   { "users.add", &addUser},
   { "users.list", &listUsers},
+  { "users.delete", &deleteUser},
   { "sensors.add", &addSensor },
   { "sensors.list", &listSensors },
   { "events.list", &listEvents },
