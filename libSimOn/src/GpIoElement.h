@@ -6,7 +6,8 @@ namespace SimOn
 {
   class GpIoElementImpl;
 
-  class GpIoElement : IGpIoElement
+  class GpIoElement
+    : public virtual IGpIoElement
   {
     public:
       GpIoElement(std::string const & gpio);

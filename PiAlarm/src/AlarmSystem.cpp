@@ -28,8 +28,7 @@ namespace PiAlarm
    
     for (auto &wSensor : wSensors)
     {
-      std::shared_ptr<PiAlarm::SensorBehavior> wSensorBehavior = SensorBehaviorFactory::create(this, wSensor);  
-
+      auto wSensorBehavior = SensorBehaviorFactory::create(this, wSensor);
       mSensorBehaviors.push_back(wSensorBehavior);
     }
 

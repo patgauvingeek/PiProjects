@@ -3,17 +3,19 @@
 #include <memory>
 #include "GpIoSensor.h"
 #include "pialarm.hpp"
+#include "ISensorBehavior.h"
 
 namespace PiAlarm
 {
   class AlarmSystem;
 
   class SensorBehavior
+    : public virtual ISensorBehavior
   {
     public:
       SensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor);
       
-      void update();
+      virtual void update();
 
     protected:
       virtual void updateRising() = 0;

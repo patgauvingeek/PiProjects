@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "SensorBehavior.h"
+#include "ISensorBehavior.h"
 
 namespace PiAlarm
 {
@@ -58,7 +58,7 @@ namespace PiAlarm
       std::chrono::time_point<std::chrono::system_clock> mExpectingUnarmedTime;
       std::shared_ptr<db::Event> mExpectingUnarmedEvent;
       std::shared_ptr<db::PiAlarm> mDB;
-      std::vector<std::shared_ptr<SensorBehavior>> mSensorBehaviors;
+      std::vector<std::shared_ptr<ISensorBehavior>> mSensorBehaviors;
   };
 
 }

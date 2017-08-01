@@ -10,7 +10,7 @@
 
 namespace PiAlarm
 {
-  std::shared_ptr<SensorBehavior> SensorBehaviorFactory::create(AlarmSystem *alarmSystem, db::Sensor const &sensor)
+  std::shared_ptr<ISensorBehavior> SensorBehaviorFactory::create(AlarmSystem *alarmSystem, db::Sensor const &sensor)
   {        
     if (sensor.kind == db::Sensor::Kind::Door)
     {

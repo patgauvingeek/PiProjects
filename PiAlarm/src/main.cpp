@@ -21,6 +21,7 @@ const std::map<std::string, int> TEXT_TO_SENSOR_KIND =
   { "window", db::Sensor::Kind::Window },
   { "motion", db::Sensor::Kind::Motion },
   { "button", db::Sensor::Kind::Button },
+  { "rfid", db::Sensor::Kind::RfId }
 };
 
 const std::map<int, std::string> SENSOR_KIND_TO_TEXT =
@@ -29,6 +30,7 @@ const std::map<int, std::string> SENSOR_KIND_TO_TEXT =
   { db::Sensor::Kind::Window, "Window" },
   { db::Sensor::Kind::Motion, "Motion" },
   { db::Sensor::Kind::Button, "Button" },
+  { db::Sensor::Kind::RfId, "RfId" },
 };
 
 const std::map<int, std::string> EVENT_TRIGGER_TO_TEXT =

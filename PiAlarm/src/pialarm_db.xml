@@ -23,6 +23,7 @@
       <value name="Window" value="2" />
       <value name="Motion" value="3" />
       <value name="Button" value="4" />
+      <value name="RfId" value="5" />
     </field>
     <index unique="true">
       <indexfield name="gpio"/>
