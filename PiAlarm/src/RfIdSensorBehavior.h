@@ -17,13 +17,13 @@ namespace PiAlarm
       
       virtual void update();
 
-    protected:
-      AlarmSystem & alarmSystem() { return *mAlarmSystem; }
-      db::Sensor & sensor() { return mSensor; }
-    
     private:
       AlarmSystem * const mAlarmSystem;
       db::Sensor mSensor;
-      SimOn::RfIdSensor mRfIdSensor;      
+      SimOn::RfIdSensor mRfIdSensor;
+
+      std::string mLastCode;
+      
+
   };
 }

@@ -25,9 +25,6 @@ echo "000000000000" > ./tty
 ./../../bin/PiAlarm users.add "Patrick"
 ./../../bin/PiAlarm users.add "Josée"
 ./../../bin/PiAlarm users.delete "Josée"
-echo
-echo Users
-./../../bin/PiAlarm users.list
 
 ./../../bin/PiAlarm sensors.add "Main Entrance" 0 door
 ./creategpiofiles.sh 0
@@ -41,7 +38,7 @@ echo Users
 ./../../bin/PiAlarm sensors.add "Button" 3 button
 ./creategpiofiles.sh 3
 
-./../../bin/PiAlarm sensors.add "RfId" "N/A" rfid
+./../../bin/PiAlarm sensors.add "RfId" UART rfid
 
 ./../../bin/PiAlarm run &
 pid=$!
@@ -51,12 +48,32 @@ echo Run as $pid
 sleep 5
 
 ./gpioupdateserie.sh
+
+echo Arming the system
+echo "A1B2C3D4E5E1" > ./tty
 sleep 1
+echo "" > ./tty
+
+sleep 20
+echo System armed
+
 ./gpioupdateserie.sh
 
+echo System expecting unarmed
+sleep 20
+echo Unarmed never occured
+
+echo Unarming the system
+echo "A1B2C3D4E5E1" > ./tty
+echo "" > ./tty
 sleep 1
+
 echo killing $pid
 kill $pid
+
+echo
+echo Users
+./../../bin/PiAlarm users.list +events
 
 echo
 echo Sensors + Events

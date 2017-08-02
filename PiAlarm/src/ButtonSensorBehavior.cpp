@@ -14,7 +14,7 @@ namespace PiAlarm
     if (mPressed)
     {
       mPressed = false;
-      alarmSystem().toggleState(sensor());
+      //up
     }
   }
 
@@ -25,9 +25,11 @@ namespace PiAlarm
   void ButtonSensorBehavior::updateFalling()
   {
     mPressed = true;
+    //down
   }
 
   void ButtonSensorBehavior::updateLow()
   {
+    //press
   }
 }

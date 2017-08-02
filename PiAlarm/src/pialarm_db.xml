@@ -16,7 +16,7 @@
   </object>
   <object name="Sensor">
     <field name="name" type="string" length="64" />
-    <field name="gpio" type="string" />
+    <field name="gpio" type="string" length="8" />
     <field name="kind" type="integer">
       <value name="Unspecified" value="0" />
       <value name="Door" value="1" />
@@ -55,6 +55,10 @@
     <relate object="Sensor" handle="events" limit="one" />
     <relate object="Event" handle="sensor" />
   </relation>
+  <relation>
+    <relate object="User" handle="events" limit="one" />
+    <relate object="Event" handle="user" />
+  </relation>
 
   <object name="Alarm">
     <field name="date" type="datetime" />
@@ -67,7 +71,7 @@
 
   <object name="ElectronicalAlarmNotifier">
     <field name="name" type="string" length="64" />
-    <field name="gpio" type="string" />
+    <field name="gpio" type="string" length="8" />
   </object>
 
   <object name="Log">

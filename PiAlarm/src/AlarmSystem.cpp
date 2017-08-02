@@ -56,9 +56,6 @@ namespace PiAlarm
       writeAlarm(wAlarm);
       wAlarm.event().link(*mExpectingUnarmedEvent);
 
-      //notify
-      notifyAllUp(wAlarm);
-
       mExpectingUnarmed = false;
       mExpectingUnarmedEvent.reset();
     }
@@ -107,8 +104,6 @@ namespace PiAlarm
       db::Alarm wAlarm(*mDB);
       writeAlarm(wAlarm);
       wAlarm.event().link(wEvent);
-      //notify
-      notifyAllUp(wAlarm);
     }
   }
 
@@ -131,24 +126,16 @@ namespace PiAlarm
       db::Alarm wAlarm(*mDB);
       writeAlarm(wAlarm);
       wAlarm.event().link(wEvent);
-      //notify
-      notifyAllUp(wAlarm);
     }
   }
 
-  void AlarmSystem::toggleState(db::Sensor &sensor)
+  db::User AlarmSystem::getUserByRfId(std::string rfid)
   {
-    if (mState == AlarmSystemState::Unarmed)
-    {
-      arm(sensor);
-    }
-    else
-    {
-      unarm(sensor);
-    }
+    return litesql::select<db::User>(*mDB, db::User::Rfid == rfid)
+      .one();
   }
-
-  void AlarmSystem::arm(db::Sensor &sensor)
+  
+  void AlarmSystem::arm(db::Sensor &sensor, db::User &user)
   {
     if (mState == AlarmSystemState::Unarmed)
     {
@@ -158,10 +145,11 @@ namespace PiAlarm
       db::Event wEvent(*mDB);
       writeEvent(db::Event::Trigger::SystemArming, wEvent);
       wEvent.sensor().link(sensor);
+      wEvent.user().link(user);
     }
   }
 
-  void AlarmSystem::unarm(db::Sensor &sensor)
+  void AlarmSystem::unarm(db::Sensor &sensor, db::User &user)
   { 
     if (mState != AlarmSystemState::Unarmed)
     {
@@ -174,8 +162,7 @@ namespace PiAlarm
       db::Event wEvent(*mDB);
       writeEvent(db::Event::Trigger::SystemUnarmed, wEvent);
       wEvent.sensor().link(sensor);
-      
-      notifyAllDown(wEvent);
+      wEvent.user().link(user);
     }
   }
 
@@ -209,14 +196,6 @@ namespace PiAlarm
     alarm.date = wNow;
     alarm.note = "---";
     alarm.update();
-  }
-
-  void AlarmSystem::notifyAllUp(db::Alarm const &alarm)
-  {
-  }
-
-  void AlarmSystem::notifyAllDown(db::Event const &event)
-  {
   }
 
   void AlarmSystem::log(std::string method, std::string what, int severity)

@@ -62,6 +62,43 @@ std::string findInMap(std::map<int, std::string> map, int key)
   }
 }
 
+std::string sensorAsString(db::Sensor &sensor)
+{
+  std::string wKind = findInMap(SENSOR_KIND_TO_TEXT, sensor.kind);
+  std::stringstream wStream;
+  wStream << "[" << wKind << "] " << sensor.name 
+          << " (" << sensor.gpio << ")";
+  return wStream.str();
+}
+
+std::string eventAsString(db::Event &event)
+{
+  auto wEventDate = event.date.value().asString("%m/%d/%y %h:%M:%s");
+  
+  std::string wSensorName("System");
+  try 
+  {
+    wSensorName = event.sensor().get().one().name;
+  } 
+  catch (litesql::NotFound e) { }
+
+  std::string wUserName("");
+  try 
+  {
+    wUserName = event.user().get().one().name;
+  } 
+  catch (litesql::NotFound e) { }
+
+  std::string wTrigger = findInMap(EVENT_TRIGGER_TO_TEXT, event.trigger);
+  std::stringstream wStream;
+  wStream << wEventDate << " - " << wSensorName << " " << wTrigger;
+  if (wUserName != "")
+  {
+    wStream << " by " << wUserName;
+  }
+  return wStream.str();
+}
+
 int addUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
   if (args.size() != 3)
@@ -87,12 +124,22 @@ int addUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> d
 
 int listUsers(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
+  bool wShowEvents = (args.size() == 3 && args[2] == "+events");
+
   auto wUsers = litesql::select<db::User>(*db)
     .all();
 
   for (auto &wUser : wUsers)
   {
     std::cout << wUser.name << ":" << wUser.rfid << std::endl;
+    if (wShowEvents)
+    {
+      auto wEvents = wUser.events().get().all();
+      for(auto &wEvent : wEvents)
+      {
+        std::cout << "  " << eventAsString(wEvent) << std::endl;
+      }
+    }
   }
   return 0;
 }
@@ -125,32 +172,6 @@ int addSensor(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm>
   wSensor.update();
 
   return 0;
-}
-
-std::string sensorAsString(db::Sensor &sensor)
-{
-  std::string wKind = findInMap(SENSOR_KIND_TO_TEXT, sensor.kind);
-  std::stringstream wStream;
-  wStream << "[" << wKind << "] " << sensor.name 
-          << " (" << sensor.gpio << ")";
-  return wStream.str();
-}
-
-std::string eventAsString(db::Event &event)
-{
-  auto wEventDate = event.date.value().asString("%m/%d/%y %h:%M:%s");
-  
-  std::string wSensorName("System");
-  try 
-  {
-    wSensorName = event.sensor().get().one().name;
-  } 
-  catch (litesql::NotFound e) { }
-
-  std::string wTrigger = findInMap(EVENT_TRIGGER_TO_TEXT, event.trigger);
-  std::stringstream wStream;
-  wStream << wEventDate << " - " << wSensorName << " >> " << wTrigger;
-  return wStream.str();
 }
 
 int listSensors(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)

@@ -35,19 +35,19 @@ namespace PiAlarm
       void windowOpened(db::Sensor &sensor);
       void windowClosed(db::Sensor &sensor);
       void motionDetected(db::Sensor &sensor);
-      void toggleState(db::Sensor &sensor);
+      
+      db::User getUserByRfId(std::string rfid);
+      void arm(db::Sensor &sensor, db::User &user);
+      void unarm(db::Sensor &sensor, db::User &user);
+
+      AlarmSystemState::Type state() const { return mState; }
 
     private:
-      void arm(db::Sensor &sensor);
-      void unarm(db::Sensor &sensor);
       inline std::chrono::duration<double> stateChangeDuration() const;
       inline std::chrono::duration<double> expectingUnarmedDuration() const;
 
       void writeEvent(int trigger, db::Event &event);
       void writeAlarm(db::Alarm &alarm);
-
-      void notifyAllUp(db::Alarm const &alarm);
-      void notifyAllDown(db::Event const &alarm);
 
       void log(std::string method, std::string what, int severity);
 
