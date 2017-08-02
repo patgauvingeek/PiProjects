@@ -14,8 +14,8 @@ namespace PiAlarm
     if (mPressed)
     {
       mPressed = false;
-      //up
     }
+    alarmSystem().log("updateRising", "button up", db::Log::Severity::Debug);
   }
 
   void ButtonSensorBehavior::updateHigh()
@@ -25,11 +25,11 @@ namespace PiAlarm
   void ButtonSensorBehavior::updateFalling()
   {
     mPressed = true;
-    //down
+    alarmSystem().log("updateFalling", "button down", db::Log::Severity::Debug);
   }
 
   void ButtonSensorBehavior::updateLow()
   {
-    //press
+    alarmSystem().log("updateLow", "button press", db::Log::Severity::Debug);
   }
 }

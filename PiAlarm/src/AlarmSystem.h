@@ -39,6 +39,7 @@ namespace PiAlarm
       db::User getUserByRfId(std::string rfid);
       void arm(db::Sensor &sensor, db::User &user);
       void unarm(db::Sensor &sensor, db::User &user);
+      void log(std::string method, std::string what, int severity);
 
       AlarmSystemState::Type state() const { return mState; }
 
@@ -48,8 +49,6 @@ namespace PiAlarm
 
       void writeEvent(int trigger, db::Event &event);
       void writeAlarm(db::Alarm &alarm);
-
-      void log(std::string method, std::string what, int severity);
 
     private:
       AlarmSystemState::Type mState;
