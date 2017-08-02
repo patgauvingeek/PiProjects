@@ -1,10 +1,12 @@
 #include "SensorBehaviorFactory.h"
-#include <memory>
+
+#include <stdexcept>
 
 #include "DoorSensorBehavior.h"
 #include "WindowSensorBehavior.h"
 #include "MotionSensorBehavior.h"
 #include "ButtonSensorBehavior.h"
+#include "RfIdSensorBehavior.h"
 
 #include "pialarm.hpp"
 
@@ -28,9 +30,13 @@ namespace PiAlarm
     {
       return std::make_shared<PiAlarm::ButtonSensorBehavior>(alarmSystem, sensor);
     }
+    else if (sensor.kind == db::Sensor::Kind::RfId)
+    {
+      return std::make_shared<PiAlarm::RfIdSensorBehavior>(alarmSystem, sensor);
+    }
     else
     {
-      throw -1;
+      throw std::runtime_error("Not supported sensor type.");
     }
   }
 }

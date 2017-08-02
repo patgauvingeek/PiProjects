@@ -41,6 +41,8 @@ echo Users
 ./../../bin/PiAlarm sensors.add "Button" 3 button
 ./creategpiofiles.sh 3
 
+./../../bin/PiAlarm sensors.add "RfId" "N/A" rfid
+
 ./../../bin/PiAlarm run &
 pid=$!
 echo
