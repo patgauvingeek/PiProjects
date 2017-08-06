@@ -93,8 +93,10 @@ namespace PiAlarm
     return wEvent;
   }
 
-  void AlarmSystem::raiseAlert(db::Event &event)
+  void AlarmSystem::raiseAlarm(db::Event &event)
   {
+    mState = AlarmSystemState::AlarmInProgress;
+
     // record alarm
     db::Alarm wAlarm(*mDB);
     insertAlarm(wAlarm);

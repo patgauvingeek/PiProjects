@@ -18,6 +18,7 @@ namespace PiAlarm
       Unarmed,
       Arming,
       Armed,
+      AlarmInProgress
     };
   }
 
@@ -31,7 +32,7 @@ namespace PiAlarm
       void update();
 
       void doorOpened(db::Sensor &sensor);
-      void raiseAlert(db::Event &event);
+      void raiseAlarm(db::Event &event);
       
       db::User getUserByRfId(std::string rfid);
       db::Event insertEvent(int trigger, db::Sensor &sensor);
