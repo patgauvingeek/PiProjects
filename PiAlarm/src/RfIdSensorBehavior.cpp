@@ -40,7 +40,7 @@ namespace PiAlarm
     }
     catch (litesql::NotFound e)
     {
-      //event invalid RF ID
+      mAlarmSystem->log("RfIdSensorBehavior::update()", "Invalid RF ID", db::Log::Severity::Error);
     }
   
     mLastCode = wRfId;
