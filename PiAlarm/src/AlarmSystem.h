@@ -47,8 +47,8 @@ namespace PiAlarm
       inline std::chrono::duration<double> stateChangeDuration() const;
       inline std::chrono::duration<double> expectingUnarmedDuration() const;
 
-      void writeEvent(int trigger, db::Event &event);
-      void writeAlarm(db::Alarm &alarm);
+      void insertEvent(int trigger, db::Event &event);
+      void insertAlarm(db::Alarm &alarm);
 
     private:
       AlarmSystemState::Type mState;

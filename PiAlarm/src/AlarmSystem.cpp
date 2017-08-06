@@ -17,7 +17,7 @@ namespace PiAlarm
   AlarmSystem::~AlarmSystem()
   {
     db::Event wEvent(*mDB);
-    writeEvent(db::Event::Trigger::SystemStopped, wEvent);
+    insertEvent(db::Event::Trigger::SystemStopped, wEvent);
   }
 
   void AlarmSystem::initialize()
@@ -33,7 +33,7 @@ namespace PiAlarm
     }
 
     db::Event wEvent(*mDB);
-    writeEvent(db::Event::Trigger::SystemStarted, wEvent);
+    insertEvent(db::Event::Trigger::SystemStarted, wEvent);
   }
 
   void AlarmSystem::update() 
@@ -45,7 +45,7 @@ namespace PiAlarm
       mStateChangeTime = std::chrono::system_clock::now();
 
       db::Event wEvent(*mDB);
-      writeEvent(db::Event::Trigger::SystemArmed, wEvent);
+      insertEvent(db::Event::Trigger::SystemArmed, wEvent);
     }
 
     // Expecting unarmed failed.
@@ -53,7 +53,7 @@ namespace PiAlarm
     {
       //record alarm
       db::Alarm wAlarm(*mDB);
-      writeAlarm(wAlarm);
+      insertAlarm(wAlarm);
       wAlarm.event().link(*mExpectingUnarmedEvent);
 
       mExpectingUnarmed = false;
@@ -70,7 +70,7 @@ namespace PiAlarm
   void AlarmSystem::doorOpened(db::Sensor &sensor)
   {
     auto wEvent = std::make_shared<db::Event>(*mDB);
-    writeEvent(db::Event::Trigger::DoorOpened, *wEvent);
+    insertEvent(db::Event::Trigger::DoorOpened, *wEvent);
     wEvent->sensor().link(sensor);
 
     if (mState == AlarmSystemState::Armed)
@@ -88,21 +88,21 @@ namespace PiAlarm
   void AlarmSystem::doorClosed(db::Sensor &sensor)
   {
     db::Event wEvent(*mDB);
-    writeEvent(db::Event::Trigger::DoorClosed, wEvent);
+    insertEvent(db::Event::Trigger::DoorClosed, wEvent);
     wEvent.sensor().link(sensor);
   }
 
   void AlarmSystem::windowOpened(db::Sensor &sensor)
   {
     db::Event wEvent(*mDB);
-    writeEvent(db::Event::Trigger::WindowOpened, wEvent);
+    insertEvent(db::Event::Trigger::WindowOpened, wEvent);
     wEvent.sensor().link(sensor);
 
     if (mState == AlarmSystemState::Armed)
     {
       //record alarm
       db::Alarm wAlarm(*mDB);
-      writeAlarm(wAlarm);
+      insertAlarm(wAlarm);
       wAlarm.event().link(wEvent);
     }
   }
@@ -110,21 +110,21 @@ namespace PiAlarm
   void AlarmSystem::windowClosed(db::Sensor &sensor)
   {    
     db::Event wEvent(*mDB);
-    writeEvent(db::Event::Trigger::WindowClosed, wEvent);
+    insertEvent(db::Event::Trigger::WindowClosed, wEvent);
     wEvent.sensor().link(sensor);
   }
 
   void AlarmSystem::motionDetected(db::Sensor &sensor)
   {
     db::Event wEvent(*mDB);
-    writeEvent(db::Event::Trigger::MotionDetected, wEvent);
+    insertEvent(db::Event::Trigger::MotionDetected, wEvent);
     wEvent.sensor().link(sensor);
 
     if (mState == AlarmSystemState::Armed)
     {
       //record alarm
       db::Alarm wAlarm(*mDB);
-      writeAlarm(wAlarm);
+      insertAlarm(wAlarm);
       wAlarm.event().link(wEvent);
     }
   }
@@ -143,7 +143,7 @@ namespace PiAlarm
       mStateChangeTime = std::chrono::system_clock::now();
       
       db::Event wEvent(*mDB);
-      writeEvent(db::Event::Trigger::SystemArming, wEvent);
+      insertEvent(db::Event::Trigger::SystemArming, wEvent);
       wEvent.sensor().link(sensor);
       wEvent.user().link(user);
     }
@@ -160,7 +160,7 @@ namespace PiAlarm
       mExpectingUnarmedEvent.reset();
 
       db::Event wEvent(*mDB);
-      writeEvent(db::Event::Trigger::SystemUnarmed, wEvent);
+      insertEvent(db::Event::Trigger::SystemUnarmed, wEvent);
       wEvent.sensor().link(sensor);
       wEvent.user().link(user);
     }
@@ -180,7 +180,7 @@ namespace PiAlarm
     return wElapsed;
   }
 
-  void AlarmSystem::writeEvent(int trigger, db::Event &event)
+  void AlarmSystem::insertEvent(int trigger, db::Event &event)
   {
     std::time_t wNow = std::time(nullptr);
     std::localtime(&wNow);
@@ -189,7 +189,7 @@ namespace PiAlarm
     event.update();
   }
 
-  void AlarmSystem::writeAlarm(db::Alarm &alarm)
+  void AlarmSystem::insertAlarm(db::Alarm &alarm)
   {
     std::time_t wNow = std::time(nullptr);
     std::localtime(&wNow);
