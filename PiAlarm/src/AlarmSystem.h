@@ -31,12 +31,11 @@ namespace PiAlarm
       void update();
 
       void doorOpened(db::Sensor &sensor);
-      void doorClosed(db::Sensor &sensor);
-      void windowOpened(db::Sensor &sensor);
-      void windowClosed(db::Sensor &sensor);
-      void motionDetected(db::Sensor &sensor);
+      void raiseAlert(db::Event &event);
       
       db::User getUserByRfId(std::string rfid);
+      db::Event insertEvent(int trigger, db::Sensor &sensor);
+
       void arm(db::Sensor &sensor, db::User &user);
       void unarm(db::Sensor &sensor, db::User &user);
       void log(std::string method, std::string what, int severity);
@@ -47,8 +46,8 @@ namespace PiAlarm
       inline std::chrono::duration<double> stateChangeDuration() const;
       inline std::chrono::duration<double> expectingUnarmedDuration() const;
 
-      void insertEvent(int trigger, db::Event &event);
-      void insertAlarm(db::Alarm &alarm);
+      static void insertEvent(int trigger, db::Event &event);
+      static void insertAlarm(db::Alarm &alarm);
 
     private:
       AlarmSystemState::Type mState;

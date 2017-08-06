@@ -85,48 +85,23 @@ namespace PiAlarm
     }
   }
 
-  void AlarmSystem::doorClosed(db::Sensor &sensor)
+  db::Event AlarmSystem::insertEvent(int trigger, db::Sensor &sensor)
   {
     db::Event wEvent(*mDB);
-    insertEvent(db::Event::Trigger::DoorClosed, wEvent);
+    insertEvent(trigger, wEvent);
     wEvent.sensor().link(sensor);
+    return wEvent;
   }
 
-  void AlarmSystem::windowOpened(db::Sensor &sensor)
+  void AlarmSystem::raiseAlert(db::Event &event)
   {
-    db::Event wEvent(*mDB);
-    insertEvent(db::Event::Trigger::WindowOpened, wEvent);
-    wEvent.sensor().link(sensor);
+    // record alarm
+    db::Alarm wAlarm(*mDB);
+    insertAlarm(wAlarm);
+    wAlarm.event().link(event);
 
-    if (mState == AlarmSystemState::Armed)
-    {
-      //record alarm
-      db::Alarm wAlarm(*mDB);
-      insertAlarm(wAlarm);
-      wAlarm.event().link(wEvent);
-    }
-  }
-
-  void AlarmSystem::windowClosed(db::Sensor &sensor)
-  {    
-    db::Event wEvent(*mDB);
-    insertEvent(db::Event::Trigger::WindowClosed, wEvent);
-    wEvent.sensor().link(sensor);
-  }
-
-  void AlarmSystem::motionDetected(db::Sensor &sensor)
-  {
-    db::Event wEvent(*mDB);
-    insertEvent(db::Event::Trigger::MotionDetected, wEvent);
-    wEvent.sensor().link(sensor);
-
-    if (mState == AlarmSystemState::Armed)
-    {
-      //record alarm
-      db::Alarm wAlarm(*mDB);
-      insertAlarm(wAlarm);
-      wAlarm.event().link(wEvent);
-    }
+    // ring bell
+    // send messages
   }
 
   db::User AlarmSystem::getUserByRfId(std::string rfid)
@@ -194,7 +169,7 @@ namespace PiAlarm
     std::time_t wNow = std::time(nullptr);
     std::localtime(&wNow);
     alarm.date = wNow;
-    alarm.note = "---";
+    alarm.note = "";
     alarm.update();
   }
 

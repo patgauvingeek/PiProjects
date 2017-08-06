@@ -18,7 +18,7 @@ namespace PiAlarm
     if (mEntranceState != EntranceState::Closed && gpIoSensor().elasped() > std::chrono::milliseconds(500))
     {
       mEntranceState = EntranceState::Closed;
-      alarmSystem().windowClosed(sensor());
+      alarmSystem().insertEvent(db::Event::Trigger::WindowClosed, sensor());
     }
   }
 
@@ -31,7 +31,11 @@ namespace PiAlarm
     if (mEntranceState != EntranceState::Opened && gpIoSensor().elasped() > std::chrono::milliseconds(500))
     {
       mEntranceState = EntranceState::Opened;
-      alarmSystem().windowOpened(sensor());
+      auto wEvent = alarmSystem().insertEvent(db::Event::Trigger::WindowOpened, sensor());
+      if (alarmSystem().state() == AlarmSystemState::Armed)
+      {
+        alarmSystem().raiseAlert(wEvent);
+      }
     }
   }
 }

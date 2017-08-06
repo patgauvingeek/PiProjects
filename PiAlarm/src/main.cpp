@@ -146,9 +146,17 @@ int listUsers(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm>
 
 int deleteUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
-  auto wUsers = litesql::select<db::User>(*db, db::User::Name == args[2])
-    .one();
-  wUsers.del();
+  try 
+  {
+    auto wUsers = litesql::select<db::User>(*db, db::User::Name == args[2])
+      .one();
+    wUsers.del();
+  } 
+  catch (litesql::NotFound e)
+  {
+    std::cout << "  " << args[2] << " is not a user." << std::endl;
+    return INVALID_ARGUMENTS;
+  }
   return 0;
 }
 
@@ -228,10 +236,17 @@ int listAlarms(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm
   for (auto &wAlarm : wAlarms)
   {
     auto wAlarmDate = wAlarm.date.value().asString("%m/%d/%y %h:%M:%s");
-    auto wEvent = wAlarm.event().get().one();
     std::cout << "Alarm at " << wAlarmDate << std::endl;
-    std::cout << "  " << eventAsString(wEvent) << std::endl;
-    std::cout << "  " << wAlarm.note << std::endl;
+    try
+    {
+      auto wEvent = wAlarm.event().get().one();
+      std::cout << "  " << eventAsString(wEvent) << std::endl;
+    } 
+    catch (litesql::NotFound e)
+    {
+      std::cout << "  " << args[2] << " is not a user." << std::endl;
+      return INVALID_ARGUMENTS;
+    }
   }
   return 0;
 }

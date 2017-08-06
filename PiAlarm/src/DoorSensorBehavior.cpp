@@ -18,7 +18,7 @@ namespace PiAlarm
     if (mEntranceState != EntranceState::Closed && gpIoSensor().elasped() > std::chrono::milliseconds(500))
     {
       mEntranceState = EntranceState::Closed;
-      alarmSystem().doorClosed(sensor());
+      alarmSystem().insertEvent(db::Event::Trigger::DoorClosed, sensor());
     }
   }
 

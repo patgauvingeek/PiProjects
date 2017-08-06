@@ -29,7 +29,11 @@ namespace PiAlarm
   {
     if (!mEventNotified && gpIoSensor().elasped() > std::chrono::milliseconds(500))
     {
-      alarmSystem().motionDetected(sensor());
+      auto wEvent = alarmSystem().insertEvent(db::Event::Trigger::MotionDetected, sensor());
+      if (alarmSystem().state() == AlarmSystemState::Armed)
+      {
+        alarmSystem().raiseAlert(wEvent);
+      }
       mEventNotified = true;
     }
   }
