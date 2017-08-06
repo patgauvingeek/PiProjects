@@ -1,7 +1,6 @@
 #pragma once
 
 #include <chrono>
-#include <memory>
 
 #include "pialarm.hpp"
 
@@ -16,7 +15,6 @@ namespace PiAlarm
     enum Type
     {
       Unarmed,
-      Arming,
       Armed,
       AlarmInProgress
     };
@@ -31,23 +29,23 @@ namespace PiAlarm
       void initialize();
       void update();
 
-      void doorOpened(db::Sensor &sensor);
-      void raiseAlarm(db::Event &event);
-      
       db::User getUserByRfId(std::string rfid);
+      db::Event getEventById(int id);
       db::Event insertEvent(int trigger);
       db::Event insertEvent(int trigger, db::Sensor &sensor);
       db::Event insertEvent(int trigger, db::Sensor &sensor, db::User &user);
+      db::Alarm insertAlarm();
+      db::Alarm insertAlarm(db::Event &event);
+      void log(std::string method, std::string what, int severity);
 
       void arm();
       void unarm();
-      void log(std::string method, std::string what, int severity);
+      void raiseAlarm();
 
       AlarmSystemState::Type state() const { return mState; }
 
     private:
       inline std::chrono::duration<double> stateChangeDuration() const;
-      inline std::chrono::duration<double> expectingUnarmedDuration() const;
 
       static void fillEvent(int trigger, db::Event &event);
       static void fillAlarm(db::Alarm &alarm);
@@ -55,9 +53,6 @@ namespace PiAlarm
     private:
       AlarmSystemState::Type mState;
       std::chrono::time_point<std::chrono::system_clock> mStateChangeTime;
-      bool mExpectingUnarmed;
-      std::chrono::time_point<std::chrono::system_clock> mExpectingUnarmedTime;
-      std::shared_ptr<db::Event> mExpectingUnarmedEvent;
       std::shared_ptr<db::PiAlarm> mDB;
       std::vector<std::shared_ptr<ISensorBehavior>> mSensorBehaviors;
   };

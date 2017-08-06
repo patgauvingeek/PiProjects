@@ -11,6 +11,8 @@ namespace PiAlarm
     public:
       DoorSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor);
       
+      virtual void update() override;
+
     protected:
       virtual void updateRising();
       virtual void updateHigh();
@@ -19,5 +21,8 @@ namespace PiAlarm
 
     private:
       EntranceState::Type mEntranceState;
+      int mExpectingUnarmedEventId;
+      std::chrono::time_point<std::chrono::system_clock> mExpectingUnarmedTime;
+      
   };
 }

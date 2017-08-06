@@ -33,6 +33,10 @@ tests: all
 		@echo "Running tests"
 		@cd ./PiAlarm/tests; ./livetest.sh
 
+logs: all
+		@echo "Logs"
+		@cd ./PiAlarm/tests; ./showlog.sh
+
 update: clean
 		@echo "Updating pi..."
 		@scp -r libSimOn PiAlarm PiMorse pi@192.168.0.8:/home/pi/PiProjects

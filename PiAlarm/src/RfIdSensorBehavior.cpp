@@ -8,11 +8,22 @@ namespace PiAlarm
   RfIdSensorBehavior::RfIdSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor)
     : mAlarmSystem(alarmSystem)
     , mSensor(sensor)
+    , mArming(false)
+    , mArmTime()
     , mRfIdSensor()
   {}
 
   void RfIdSensorBehavior::update()
   {
+    // waiting 15 second before arming the system
+    if (mArming && std::chrono::system_clock::now() >= mArmTime)
+    {
+      mArming = false;
+      mAlarmSystem->insertEvent(db::Event::Trigger::SystemArmed);
+      mAlarmSystem->arm();
+    }
+
+    // reading the sensor
     std::string wRfId;
     if (mRfIdSensor.read(wRfId) == false)
     {
@@ -29,13 +40,15 @@ namespace PiAlarm
     {
       auto wUser = mAlarmSystem->getUserByRfId(wRfId);
 
-      if (mAlarmSystem->state() == AlarmSystemState::Unarmed)
+      if (mAlarmSystem->state() == AlarmSystemState::Unarmed && mArming == false)
       {
+        mArming = true;
         mAlarmSystem->insertEvent(db::Event::Trigger::SystemArming, mSensor, wUser);
-        mAlarmSystem->arm();
+        mArmTime = std::chrono::system_clock::now() + std::chrono::seconds(15);
       }
       else
       {
+        mArming = false;
         mAlarmSystem->insertEvent(db::Event::Trigger::SystemUnarmed, mSensor, wUser);
         mAlarmSystem->unarm();
       }

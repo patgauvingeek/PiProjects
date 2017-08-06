@@ -34,7 +34,8 @@ namespace PiAlarm
       auto wEvent = alarmSystem().insertEvent(db::Event::Trigger::WindowOpened, sensor());
       if (alarmSystem().state() == AlarmSystemState::Armed)
       {
-        alarmSystem().raiseAlarm(wEvent);
+        alarmSystem().insertAlarm(wEvent);
+        alarmSystem().raiseAlarm();
       }
     }
   }
