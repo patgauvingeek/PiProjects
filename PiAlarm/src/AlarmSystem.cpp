@@ -16,8 +16,7 @@ namespace PiAlarm
 
   AlarmSystem::~AlarmSystem()
   {
-    db::Event wEvent(*mDB);
-    insertEvent(db::Event::Trigger::SystemStopped, wEvent);
+    insertEvent(db::Event::Trigger::SystemStopped);
   }
 
   void AlarmSystem::initialize()
@@ -32,8 +31,7 @@ namespace PiAlarm
       mSensorBehaviors.push_back(wSensorBehavior);
     }
 
-    db::Event wEvent(*mDB);
-    insertEvent(db::Event::Trigger::SystemStarted, wEvent);
+    insertEvent(db::Event::Trigger::SystemStarted);
   }
 
   void AlarmSystem::update() 
@@ -44,17 +42,14 @@ namespace PiAlarm
       mState = AlarmSystemState::Armed;
       mStateChangeTime = std::chrono::system_clock::now();
 
-      db::Event wEvent(*mDB);
-      insertEvent(db::Event::Trigger::SystemArmed, wEvent);
+      insertEvent(db::Event::Trigger::SystemArmed);
     }
 
     // Expecting unarmed failed.
     if (mExpectingUnarmed && expectingUnarmedDuration() > std::chrono::seconds(15))
     {
       //record alarm
-      db::Alarm wAlarm(*mDB);
-      insertAlarm(wAlarm);
-      wAlarm.event().link(*mExpectingUnarmedEvent);
+      raiseAlarm(*mExpectingUnarmedEvent);
 
       mExpectingUnarmed = false;
       mExpectingUnarmedEvent.reset();
@@ -70,7 +65,8 @@ namespace PiAlarm
   void AlarmSystem::doorOpened(db::Sensor &sensor)
   {
     auto wEvent = std::make_shared<db::Event>(*mDB);
-    insertEvent(db::Event::Trigger::DoorOpened, *wEvent);
+    fillEvent(db::Event::Trigger::DoorOpened, *wEvent);
+    wEvent->update();
     wEvent->sensor().link(sensor);
 
     if (mState == AlarmSystemState::Armed)
@@ -85,10 +81,17 @@ namespace PiAlarm
     }
   }
 
-  db::Event AlarmSystem::insertEvent(int trigger, db::Sensor &sensor)
+  db::Event AlarmSystem::insertEvent(int trigger)
   {
     db::Event wEvent(*mDB);
-    insertEvent(trigger, wEvent);
+    fillEvent(trigger, wEvent);
+    wEvent.update();
+    return wEvent;
+  }
+
+  db::Event AlarmSystem::insertEvent(int trigger, db::Sensor &sensor)
+  {
+    auto wEvent = insertEvent(trigger);
     wEvent.sensor().link(sensor);
     return wEvent;
   }
@@ -99,11 +102,11 @@ namespace PiAlarm
 
     // record alarm
     db::Alarm wAlarm(*mDB);
-    insertAlarm(wAlarm);
+    fillAlarm(wAlarm);
+    wAlarm.update();
     wAlarm.event().link(event);
 
-    // ring bell
-    // send messages
+    // AlarmNotifier
   }
 
   db::User AlarmSystem::getUserByRfId(std::string rfid)
@@ -119,9 +122,7 @@ namespace PiAlarm
       mState = AlarmSystemState::Arming;
       mStateChangeTime = std::chrono::system_clock::now();
       
-      db::Event wEvent(*mDB);
-      insertEvent(db::Event::Trigger::SystemArming, wEvent);
-      wEvent.sensor().link(sensor);
+      auto wEvent = insertEvent(db::Event::Trigger::SystemArming, sensor);
       wEvent.user().link(user);
     }
   }
@@ -136,9 +137,7 @@ namespace PiAlarm
       mExpectingUnarmed = false;
       mExpectingUnarmedEvent.reset();
 
-      db::Event wEvent(*mDB);
-      insertEvent(db::Event::Trigger::SystemUnarmed, wEvent);
-      wEvent.sensor().link(sensor);
+      auto wEvent = insertEvent(db::Event::Trigger::SystemUnarmed, sensor);
       wEvent.user().link(user);
     }
   }
@@ -157,22 +156,20 @@ namespace PiAlarm
     return wElapsed;
   }
 
-  void AlarmSystem::insertEvent(int trigger, db::Event &event)
+  void AlarmSystem::fillEvent(int trigger, db::Event &event)
   {
     std::time_t wNow = std::time(nullptr);
     std::localtime(&wNow);
     event.date = wNow;
     event.trigger = trigger;
-    event.update();
   }
 
-  void AlarmSystem::insertAlarm(db::Alarm &alarm)
+  void AlarmSystem::fillAlarm(db::Alarm &alarm)
   {
     std::time_t wNow = std::time(nullptr);
     std::localtime(&wNow);
     alarm.date = wNow;
     alarm.note = "";
-    alarm.update();
   }
 
   void AlarmSystem::log(std::string method, std::string what, int severity)

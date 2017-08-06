@@ -35,6 +35,7 @@ namespace PiAlarm
       void raiseAlarm(db::Event &event);
       
       db::User getUserByRfId(std::string rfid);
+      db::Event insertEvent(int trigger);
       db::Event insertEvent(int trigger, db::Sensor &sensor);
 
       void arm(db::Sensor &sensor, db::User &user);
@@ -47,8 +48,8 @@ namespace PiAlarm
       inline std::chrono::duration<double> stateChangeDuration() const;
       inline std::chrono::duration<double> expectingUnarmedDuration() const;
 
-      static void insertEvent(int trigger, db::Event &event);
-      static void insertAlarm(db::Alarm &alarm);
+      static void fillEvent(int trigger, db::Event &event);
+      static void fillAlarm(db::Alarm &alarm);
 
     private:
       AlarmSystemState::Type mState;
