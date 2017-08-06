@@ -99,6 +99,7 @@ namespace PiAlarm
   void AlarmSystem::raiseAlarm(db::Event &event)
   {
     mState = AlarmSystemState::AlarmInProgress;
+    mStateChangeTime = std::chrono::system_clock::now();
 
     // record alarm
     db::Alarm wAlarm(*mDB);
