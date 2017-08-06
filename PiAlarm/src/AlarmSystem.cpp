@@ -96,6 +96,13 @@ namespace PiAlarm
     return wEvent;
   }
 
+  db::Event AlarmSystem::insertEvent(int trigger, db::Sensor &sensor, db::User &user)
+  {
+    auto wEvent = insertEvent(trigger, sensor);
+    wEvent.user().link(user);
+    return wEvent;
+  }
+
   void AlarmSystem::raiseAlarm(db::Event &event)
   {
     mState = AlarmSystemState::AlarmInProgress;
@@ -116,19 +123,16 @@ namespace PiAlarm
       .one();
   }
   
-  void AlarmSystem::arm(db::Sensor &sensor, db::User &user)
+  void AlarmSystem::arm()
   {
     if (mState == AlarmSystemState::Unarmed)
     {
       mState = AlarmSystemState::Arming;
       mStateChangeTime = std::chrono::system_clock::now();
-      
-      auto wEvent = insertEvent(db::Event::Trigger::SystemArming, sensor);
-      wEvent.user().link(user);
     }
   }
 
-  void AlarmSystem::unarm(db::Sensor &sensor, db::User &user)
+  void AlarmSystem::unarm()
   { 
     if (mState != AlarmSystemState::Unarmed)
     {
@@ -137,9 +141,6 @@ namespace PiAlarm
 
       mExpectingUnarmed = false;
       mExpectingUnarmedEvent.reset();
-
-      auto wEvent = insertEvent(db::Event::Trigger::SystemUnarmed, sensor);
-      wEvent.user().link(user);
     }
   }
 

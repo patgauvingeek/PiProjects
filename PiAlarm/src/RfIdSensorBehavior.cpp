@@ -31,11 +31,13 @@ namespace PiAlarm
 
       if (mAlarmSystem->state() == AlarmSystemState::Unarmed)
       {
-        mAlarmSystem->arm(mSensor, wUser);
+        mAlarmSystem->insertEvent(db::Event::Trigger::SystemArming, mSensor, wUser);
+        mAlarmSystem->arm();
       }
       else
       {
-        mAlarmSystem->unarm(mSensor, wUser);
+        mAlarmSystem->insertEvent(db::Event::Trigger::SystemUnarmed, mSensor, wUser);
+        mAlarmSystem->unarm();
       }
     }
     catch (litesql::NotFound e)
