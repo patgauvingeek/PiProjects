@@ -6,7 +6,6 @@ namespace PiAlarm
 {
   AlarmSystem::AlarmSystem(std::shared_ptr<db::PiAlarm> db)
     : mState(AlarmSystemState::Unarmed)
-    , mStateChangeTime()
     , mDB(db)
     , mSensorBehaviors()
   {}
@@ -86,7 +85,6 @@ namespace PiAlarm
   void AlarmSystem::raiseAlarm()
   {
     mState = AlarmSystemState::AlarmInProgress;
-    mStateChangeTime = std::chrono::system_clock::now();
 
     // AlarmNotifier
   }
@@ -108,7 +106,6 @@ namespace PiAlarm
     if (mState == AlarmSystemState::Unarmed)
     {
       mState = AlarmSystemState::Armed;
-      mStateChangeTime = std::chrono::system_clock::now();
     }
   }
 
@@ -117,15 +114,7 @@ namespace PiAlarm
     if (mState != AlarmSystemState::Unarmed)
     {
       mState = AlarmSystemState::Unarmed;
-      mStateChangeTime = std::chrono::system_clock::now();
     }
-  }
-
-  std::chrono::duration<double> AlarmSystem::stateChangeDuration() const
-  {
-    auto wNow = std::chrono::system_clock::now();
-    auto wElapsed = wNow - mStateChangeTime;
-    return wElapsed;
   }
 
   void AlarmSystem::log(std::string method, std::string what, int severity)

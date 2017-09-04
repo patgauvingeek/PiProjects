@@ -45,11 +45,7 @@ namespace PiAlarm
       AlarmSystemState::Type state() const { return mState; }
 
     private:
-      inline std::chrono::duration<double> stateChangeDuration() const;
-
-    private:
       AlarmSystemState::Type mState;
-      std::chrono::time_point<std::chrono::system_clock> mStateChangeTime;
       std::shared_ptr<db::PiAlarm> mDB;
       std::vector<std::shared_ptr<ISensorBehavior>> mSensorBehaviors;
   };
