@@ -72,8 +72,7 @@
     <field name="kind" type="integer">
       <value name="Unspecified" value="0" />
       <value name="Bell" value="1" />
-      <value name="Email" value="2" />
-      <value name="Texto" value="3" />
+      <value name="Message" value="2" />
     </field>
   </object>
 

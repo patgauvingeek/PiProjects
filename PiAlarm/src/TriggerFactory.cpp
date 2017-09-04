@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 #include "BellTrigger.h"
+#include "MessageTrigger.h"
 
 namespace PiAlarm
 {
@@ -11,6 +12,10 @@ namespace PiAlarm
     if (notifier.kind == db::Notifier::Kind::Bell)
     {
       return std::make_shared<PiAlarm::BellTrigger>(alarmSystem, notifier);     
+    }
+    else if (notifier.kind == db::Notifier::Kind::Message)
+    {
+      return std::make_shared<PiAlarm::MessageTrigger>(alarmSystem, notifier);     
     }
     else
     {
