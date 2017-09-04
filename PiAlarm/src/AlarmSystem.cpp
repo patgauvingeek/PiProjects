@@ -15,30 +15,6 @@ namespace PiAlarm
     insertEvent(db::Event::Trigger::SystemStopped);
   }
 
-  void AlarmSystem::initialize()
-  {
-    auto wSensors = litesql::select<db::Sensor>(*mDB)
-      .orderBy(db::Sensor::Name)
-      .all();
-   
-    for (auto &wSensor : wSensors)
-    {
-      auto wSensorBehavior = SensorBehaviorFactory::create(this, wSensor);
-      mSensorBehaviors.push_back(wSensorBehavior);
-    }
-
-    insertEvent(db::Event::Trigger::SystemStarted);
-  }
-
-  void AlarmSystem::update() 
-  {
-    // sensors
-    for (auto &wSensorBehavior : mSensorBehaviors)
-    {
-      wSensorBehavior->update();
-    }
-  }
-
   db::Event AlarmSystem::insertEvent(int trigger)
   {
     db::Event wEvent(*mDB);
@@ -99,6 +75,30 @@ namespace PiAlarm
   {
     return litesql::select<db::Event>(*mDB, db::Event::Id == id)
       .one();
+  }
+
+  void AlarmSystem::initialize()
+  {
+    auto wSensors = litesql::select<db::Sensor>(*mDB)
+      .orderBy(db::Sensor::Name)
+      .all();
+   
+    for (auto &wSensor : wSensors)
+    {
+      auto wSensorBehavior = SensorBehaviorFactory::create(this, wSensor);
+      mSensorBehaviors.push_back(wSensorBehavior);
+    }
+
+    insertEvent(db::Event::Trigger::SystemStarted);
+  }
+
+  void AlarmSystem::update() 
+  {
+    // sensors
+    for (auto &wSensorBehavior : mSensorBehaviors)
+    {
+      wSensorBehavior->update();
+    }
   }
   
   void AlarmSystem::arm()

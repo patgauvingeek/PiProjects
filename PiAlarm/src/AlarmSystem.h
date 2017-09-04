@@ -26,9 +26,7 @@ namespace PiAlarm
       AlarmSystem(std::shared_ptr<db::PiAlarm> db);
       ~AlarmSystem();
 
-      void initialize();
-      void update();
-
+      // Database Access Methods
       db::User getUserByRfId(std::string rfid);
       db::Event getEventById(int id);
       db::Event insertEvent(int trigger);
@@ -37,6 +35,10 @@ namespace PiAlarm
       db::Alarm insertAlarm();
       db::Alarm insertAlarm(db::Event &event);
       void log(std::string method, std::string what, int severity);
+
+      // Alarm System features
+      void initialize();
+      void update();
 
       void arm();
       void unarm();
