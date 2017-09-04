@@ -14,6 +14,7 @@ namespace PiAlarm
 
   AlarmSystem::~AlarmSystem()
   {
+    unarm();
     insertEvent(db::Event::Trigger::SystemStopped);
   }
 
@@ -142,7 +143,7 @@ namespace PiAlarm
   }
   
   void AlarmSystem::raiseAlarm()
-  { 
+  {
     for (auto &wTrigger : mTriggers)
     {
       wTrigger->activate();
