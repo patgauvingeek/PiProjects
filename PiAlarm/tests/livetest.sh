@@ -68,6 +68,7 @@ echo Unarmed never occured
 
 echo Unarming the system
 echo "A1B2C3D4E5E1" > ./tty
+sleep 1
 echo "" > ./tty
 sleep 1
 
