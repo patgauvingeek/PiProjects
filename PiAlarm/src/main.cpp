@@ -57,6 +57,14 @@ const std::map<int, std::string> EVENT_TRIGGER_TO_TEXT =
   { db::Event::Trigger::MotionDetected, "Motion Detected" },
 };
 
+const std::map<int, std::string> LOG_SEVERITY_TO_TEXT =
+{
+  { db::Log::Severity::Debug, "Debug" },
+  { db::Log::Severity::Info, "Info" },
+  { db::Log::Severity::Warning, "Warning" },
+  { db::Log::Severity::Error, "Error" }
+};
+
 std::string findInMap(std::map<int, std::string> map, int key)
 {
   auto wIterator = map.find(key);
@@ -314,7 +322,8 @@ int showLogs(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> 
   for (auto &wLog : wLogs)
   {
     auto wDate = wLog.date.value().asString("%m/%d/%y %h:%M:%s");
-    std::cout <<  wDate << " >> " << wLog.method << " >> " << wLog.what << std::endl;
+    std::cout <<  wDate << " >> " << wLog.method << " >> "
+              << "(" << findInMap(LOG_SEVERITY_TO_TEXT, wLog.severity) << ") " << wLog.what << std::endl;
   }
   return 0;
 }
