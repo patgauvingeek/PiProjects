@@ -13,13 +13,13 @@ namespace PiAlarm
   
   void BellTrigger::activate()
   {
-    alarmSystem().log("BellTrigger::activate", "Bell trigger has been activated.", db::Log::Severity::Debug);
+    alarmSystem().log("BellTrigger::activate", "Bell has been activated.", db::Log::Severity::Debug);
     mGpIo.setValue(SimOn::Value::High);
   }
   
   void BellTrigger::deactivate()
   {
-    alarmSystem().log("BellTrigger::deactivate", "Bell trigger has been deactivated.", db::Log::Severity::Debug);
+    alarmSystem().log("BellTrigger::deactivate", "Bell has been deactivated.", db::Log::Severity::Debug);
     mGpIo.setValue(SimOn::Value::Low);
   }
 
