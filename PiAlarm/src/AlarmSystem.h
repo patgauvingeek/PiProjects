@@ -47,9 +47,6 @@ namespace PiAlarm
     private:
       inline std::chrono::duration<double> stateChangeDuration() const;
 
-      static void fillEvent(int trigger, db::Event &event);
-      static void fillAlarm(db::Alarm &alarm);
-
     private:
       AlarmSystemState::Type mState;
       std::chrono::time_point<std::chrono::system_clock> mStateChangeTime;
