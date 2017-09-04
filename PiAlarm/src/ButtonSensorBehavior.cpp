@@ -4,8 +4,8 @@
 
 namespace PiAlarm
 {
-  ButtonSensorBehavior::ButtonSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor)
-    : SensorBehavior(alarmSystem, sensor)
+  ButtonSensorBehavior::ButtonSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor, std::string const & gpio)
+    : SensorBehavior(alarmSystem, sensor, gpio)
     , mPressed(false)
   {}
 

@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+#include "Parameters.h"
 #include "DoorSensorBehavior.h"
 #include "WindowSensorBehavior.h"
 #include "MotionSensorBehavior.h"
@@ -14,23 +15,34 @@ namespace PiAlarm
   {        
     if (sensor.kind == db::Sensor::Kind::Door)
     {
-      return std::make_shared<PiAlarm::DoorSensorBehavior>(alarmSystem, sensor);     
+      auto wParameters = Parameters::toVector(sensor.parameters);
+      auto wGpio = wParameters[0];
+      return std::make_shared<PiAlarm::DoorSensorBehavior>(alarmSystem, sensor, wGpio);     
     } 
     else if (sensor.kind == db::Sensor::Kind::Window)
     {
-      return std::make_shared<PiAlarm::WindowSensorBehavior>(alarmSystem, sensor);
+      auto wParameters = Parameters::toVector(sensor.parameters);
+      auto wGpio = wParameters[0];
+      return std::make_shared<PiAlarm::WindowSensorBehavior>(alarmSystem, sensor, wGpio);
     }
     else if (sensor.kind == db::Sensor::Kind::Motion)
     {
-      return std::make_shared<PiAlarm::MotionSensorBehavior>(alarmSystem, sensor);
+      auto wParameters = Parameters::toVector(sensor.parameters);
+      auto wGpio = wParameters[0];
+      return std::make_shared<PiAlarm::MotionSensorBehavior>(alarmSystem, sensor, wGpio);
     }
     else if (sensor.kind == db::Sensor::Kind::Button)
     {
-      return std::make_shared<PiAlarm::ButtonSensorBehavior>(alarmSystem, sensor);
+      auto wParameters = Parameters::toVector(sensor.parameters);
+      auto wGpio = wParameters[0];
+      return std::make_shared<PiAlarm::ButtonSensorBehavior>(alarmSystem, sensor, wGpio);
     }
     else if (sensor.kind == db::Sensor::Kind::RfId)
     {
-      return std::make_shared<PiAlarm::RfIdSensorBehavior>(alarmSystem, sensor);
+      auto wParameters = Parameters::toVector(sensor.parameters);
+      auto wDevice = wParameters[0];
+      auto wBaudRate = wParameters[1];
+      return std::make_shared<PiAlarm::RfIdSensorBehavior>(alarmSystem, sensor, wDevice, wBaudRate);
     }
     else
     {

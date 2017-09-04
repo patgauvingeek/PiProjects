@@ -12,6 +12,26 @@ if [ -f pialarm.db ]; then
   rm pialarm.db
 fi
 
+echo "Adding sensors"
+./../../bin/PiAlarm sensors.add "Main Entrance" door 0
+./creategpiofiles.sh 0
+
+./../../bin/PiAlarm sensors.add "Patio" window 1
+./creategpiofiles.sh 1
+
+./../../bin/PiAlarm sensors.add "Salon" motion 2
+./creategpiofiles.sh 2
+
+./../../bin/PiAlarm sensors.add "Button" button 3
+./creategpiofiles.sh 3
+
+./../../bin/PiAlarm sensors.add "RfId" rfid ./tty 9600
+
+echo "Adding notifiers"
+./../../bin/PiAlarm notifiers.add "Bell" bell 4
+./creategpiofiles.sh 4
+
+echo "Adding users"
 echo "" > stty_params
 echo "A1B2C3D4E5E1" > ./tty
 ./../../bin/PiAlarm users.add "Patrick"
@@ -25,23 +45,6 @@ echo "000000000000" > ./tty
 ./../../bin/PiAlarm users.add "Patrick"
 ./../../bin/PiAlarm users.add "Josée"
 ./../../bin/PiAlarm users.delete "Josée"
-
-./../../bin/PiAlarm sensors.add "Main Entrance" 0 door
-./creategpiofiles.sh 0
-
-./../../bin/PiAlarm sensors.add "Patio" 1 window
-./creategpiofiles.sh 1
-
-./../../bin/PiAlarm sensors.add "Salon" 2 motion
-./creategpiofiles.sh 2
-
-./../../bin/PiAlarm sensors.add "Button" 3 button
-./creategpiofiles.sh 3
-
-./../../bin/PiAlarm sensors.add "RfId" UART rfid
-
-./../../bin/PiAlarm notifiers.add "Bell" bell 4
-./creategpiofiles.sh 4
 
 ./../../bin/PiAlarm run &
 pid=$!

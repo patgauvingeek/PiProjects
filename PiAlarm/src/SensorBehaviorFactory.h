@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-
 #include "ISensorBehavior.h"
 #include "AlarmSystem.h"
 #include "pialarm.hpp"

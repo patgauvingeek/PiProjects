@@ -9,7 +9,7 @@ namespace PiAlarm
     : public virtual SensorBehavior
   {
     public:
-      WindowSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor);
+      WindowSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const &sensor, std::string const &gpio);
       
     protected:
       virtual void updateRising();

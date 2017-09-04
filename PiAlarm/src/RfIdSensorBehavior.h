@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <string>
 #include "pialarm.hpp"
 #include "ISensorBehavior.h"
 #include "RfIdSensor.h"
@@ -13,7 +14,8 @@ namespace PiAlarm
     : public virtual ISensorBehavior
   {
     public:
-      RfIdSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor);
+      RfIdSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const &sensor,
+                         std::string const &device, std::string const &baudRate);
       
       virtual void update();
 

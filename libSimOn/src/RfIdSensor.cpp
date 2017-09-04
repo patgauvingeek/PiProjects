@@ -10,21 +10,17 @@ namespace SimOn
   class RfIdSensorImpl
   {
     private:
-    
-      // RDM6300 device is "/dev/ttyAMA0"
-      // RDM6300 Baud Rate is 9600
-#ifdef __arm__
-      const std::string DEVICE = "/dev/ttyAMA0";
-#else
-      const std::string DEVICE = "./tty";
-#endif
-      const int DEVICE_BAUD_RATE = 9600;
+      std::string mDevice;
 
-    public:
-      RfIdSensorImpl()
+    public:      
+      // RDM6300 device on Raspberry Pi is "/dev/ttyAMA0"
+      // RDM6300 Baud Rate is 9600
+      // Tests device is "./tty"
+      RfIdSensorImpl(std::string device, std::string baudRate)
+        : mDevice(device)
       {
         std::stringstream wCommandStream;
-        wCommandStream << "stty -F " << DEVICE << " sane raw pass8 -echo -hupcl clocal " << DEVICE_BAUD_RATE;
+        wCommandStream << "stty -F " << device << " sane raw pass8 -echo -hupcl clocal " << baudRate;
         system(wCommandStream.str().c_str());
       }
 
@@ -53,7 +49,7 @@ namespace SimOn
 
       bool read(std::string & data) const
       {
-        std::ifstream wFileStream(DEVICE);
+        std::ifstream wFileStream(mDevice);
         if (wFileStream.is_open() == false)
         {
           std::stringstream msg;
@@ -100,8 +96,8 @@ namespace SimOn
       }
   };
 
-  RfIdSensor::RfIdSensor()
-    : mImplementation(new RfIdSensorImpl())
+  RfIdSensor::RfIdSensor(std::string const &device, std::string const &baudRate)
+    : mImplementation(new RfIdSensorImpl(device, baudRate))
   {
   }
 

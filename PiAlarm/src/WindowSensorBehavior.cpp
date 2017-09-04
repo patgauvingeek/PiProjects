@@ -4,8 +4,8 @@
 
 namespace PiAlarm
 {
-  WindowSensorBehavior::WindowSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor)
-    : SensorBehavior(alarmSystem, sensor)
+  WindowSensorBehavior::WindowSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const &sensor, std::string const &gpio)
+    : SensorBehavior(alarmSystem, sensor, gpio)
     , mEntranceState(EntranceState::Unknown)
   {}
 

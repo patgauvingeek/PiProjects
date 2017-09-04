@@ -1,5 +1,6 @@
 #include <functional>
 #include <iostream>
+#include <sstream>
 #include <map>
 #include <memory>
 #include <string>
@@ -8,12 +9,14 @@
 
 #include "pialarm.hpp"
 
+#include "Parameters.h"
 #include "AlarmSystem.h"
 #include "RealTimeApplication.h"
 #include "RfIdSensor.h"
 
 const int INVALID_ARGUMENTS = 1;
 const int NOT_SUPPORTED_DATABASE = 2;
+const int SENSOR_NOT_FOUND = 3;
 
 const std::map<std::string, int> TEXT_TO_SENSOR_KIND =
 {
@@ -132,21 +135,38 @@ int addUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> d
   {
     return INVALID_ARGUMENTS;
   }
-  db::User wUser(*db);  
-  wUser.name = args[2];
   
-  std::cout << "Please, scan RF ID for " << args[2] << "... " << std::flush;
-  SimOn::RfIdSensor wRfIdSensor;
-  std::string wRfId;
-  while (wRfIdSensor.read(wRfId) == false)
+  try 
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  }
-  std::cout << wRfId << std::endl;
-  wUser.rfid = wRfId;
-  wUser.update();
+    // find the sensor...
+    auto wSensor = litesql::select<db::Sensor>(*db, db::Sensor::Kind == db::Sensor::Kind::RfId)
+      .one();
+    auto wParameters = PiAlarm::Parameters::toVector(wSensor.parameters);
+    auto wDevice = wParameters[0];
+    auto wBaudRate = wParameters[1];
+    // read the sensor
+    SimOn::RfIdSensor wRfIdSensor(wDevice, wBaudRate);
+    std::cout << wDevice << ", " << wBaudRate << std::endl;
+    std::cout << "Please, scan RF ID for " << args[2] << "... " << std::flush;
+    std::string wRfId;
+    while (wRfIdSensor.read(wRfId) == false)
+    {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    // insert user
+    db::User wUser(*db);
+    wUser.name = args[2];
+    std::cout << wRfId << std::endl;
+    wUser.rfid = wRfId;
+    wUser.update();
 
-  return 0;
+    return 0;
+  } 
+  catch (litesql::NotFound e)
+  {
+    std::cout << "No RFID device found in the database..." << std::flush;
+    return SENSOR_NOT_FOUND;
+  }
 }
 
 int listUsers(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
@@ -189,21 +209,19 @@ int deleteUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm
 
 int addSensor(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
-  if (args.size() != 5)
+  if (args.size() < 4)
   {
     return INVALID_ARGUMENTS;
   }
   db::Sensor wSensor(*db);  
   wSensor.name = args[2];
-  wSensor.parameters = args[3];
-
-  auto wSensorKind = TEXT_TO_SENSOR_KIND.find(args[4]);
+  auto wSensorKind = TEXT_TO_SENSOR_KIND.find(args[3]);
   if (wSensorKind == TEXT_TO_SENSOR_KIND.end())
   {
     return INVALID_ARGUMENTS;
   }
   wSensor.kind = wSensorKind->second;
-
+  wSensor.parameters = PiAlarm::Parameters::toParameters(args, 4);
   wSensor.update();
 
   return 0;
@@ -233,7 +251,7 @@ int listSensors(const std::vector<std::string> &args, std::shared_ptr<db::PiAlar
 
 int addNotifier(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
-  if (args.size() != 4 && args.size() != 5)
+  if (args.size() < 4)
   {
     return INVALID_ARGUMENTS;
   }
@@ -245,10 +263,7 @@ int addNotifier(const std::vector<std::string> &args, std::shared_ptr<db::PiAlar
     return INVALID_ARGUMENTS;
   }
   wNotifier.kind = wNotifierKind->second;
-  if (args.size() == 5)
-  {
-    wNotifier.parameters = args[4];
-  }
+  wNotifier.parameters = PiAlarm::Parameters::toParameters(args, 4);
   wNotifier.update();
 
   return 0;

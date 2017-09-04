@@ -4,8 +4,8 @@
 
 namespace PiAlarm
 {
-  DoorSensorBehavior::DoorSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor)
-    : SensorBehavior(alarmSystem, sensor)
+  DoorSensorBehavior::DoorSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor, std::string const & gpio)
+    : SensorBehavior(alarmSystem, sensor, gpio)
     , mEntranceState(EntranceState::Unknown)
     , mExpectingUnarmedEventId(-1)
     , mExpectingUnarmedTime()

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "GpIoSensor.h"
 #include "pialarm.hpp"
 #include "ISensorBehavior.h"
@@ -12,7 +13,7 @@ namespace PiAlarm
     : public virtual ISensorBehavior
   {
     public:
-      SensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor);
+      SensorBehavior(AlarmSystem *alarmSystem, db::Sensor const &sensor, std::string const &gpio);
       
       virtual void update();
 

@@ -5,12 +5,13 @@
 
 namespace PiAlarm
 {
-  RfIdSensorBehavior::RfIdSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor)
+  RfIdSensorBehavior::RfIdSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor,
+                                         std::string const &device, std::string const &baudRate)
     : mAlarmSystem(alarmSystem)
     , mSensor(sensor)
     , mArming(false)
     , mArmTime()
-    , mRfIdSensor()
+    , mRfIdSensor(device, baudRate)
   {}
 
   void RfIdSensorBehavior::update()

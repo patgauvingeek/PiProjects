@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "EntranceState.h"
 #include "SensorBehavior.h"
 
@@ -9,7 +10,7 @@ namespace PiAlarm
     : public virtual SensorBehavior
   {
     public:
-      DoorSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor);
+      DoorSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor, std::string const & gpio);
       
       virtual void update() override;
 

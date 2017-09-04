@@ -4,8 +4,8 @@
 
 namespace PiAlarm
 {
-  MotionSensorBehavior::MotionSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor)
-    : SensorBehavior(alarmSystem, sensor)
+  MotionSensorBehavior::MotionSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const &sensor, std::string const &gpio)
+    : SensorBehavior(alarmSystem, sensor, gpio)
     , mEventNotified(false)
   {}
 
