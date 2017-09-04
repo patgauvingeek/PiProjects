@@ -86,11 +86,10 @@
     <field name="what" type="string" length="512" />
     <field name="severity" type="integer">
       <value name="Unspecified" value="0" />
-      <value name="Trace" value="1"/>
-      <value name="Debug" value="2"/>
-      <value name="Info" value="3"/>
-      <value name="Warning" value="4"/>
-      <value name="Error" value="5"/>
+      <value name="Debug" value="1"/>
+      <value name="Info" value="2"/>
+      <value name="Warning" value="3"/>
+      <value name="Error" value="4"/>
     </field>
   </object>
 </database>
