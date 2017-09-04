@@ -146,7 +146,6 @@ int addUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> d
     auto wBaudRate = wParameters[1];
     // read the sensor
     SimOn::RfIdSensor wRfIdSensor(wDevice, wBaudRate);
-    std::cout << wDevice << ", " << wBaudRate << std::endl;
     std::cout << "Please, scan RF ID for " << args[2] << "... " << std::flush;
     std::string wRfId;
     while (wRfIdSensor.read(wRfId) == false)

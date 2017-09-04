@@ -1,4 +1,4 @@
-CXXFLAGS += -std=c++11 -Idb -I../libSimOn/src -Wall -fexceptions -Wno-deprecated-declarations
+CXXFLAGS  = -std=c++11 -Idb -I../libSimOn/src -Wall -fexceptions -Wno-deprecated-declarations
 LDFLAGS   = -L../lib/$(TARGET_ARCH) -lSimOn -llitesql -llitesql-util
 
 TARGET_DIR=../bin/$(TARGET_ARCH)
@@ -59,3 +59,6 @@ clean:
 		@rm -Rf obj
 
 rebuild: clean all
+
+debug: CXXFLAGS += -DDEBUG -g
+debug: clean all

@@ -6,22 +6,25 @@ all: $(PROJECTS)
 
 PiMorse: libSimOn
 		@echo "=== PiMorse ==="
-		@$(MAKE) -C PiMorse --no-print-directory
+		@$(MAKE) $(OPT) -C PiMorse --no-print-directory
 
 PiAlarm: libSimOn
 		@echo "=== PiAlarm ==="
-		@$(MAKE) -C PiAlarm --no-print-directory
+		@$(MAKE) $(OPT) -C PiAlarm --no-print-directory
 
 libSimOn:
 		@echo "=== libSimOn ==="
-		@$(MAKE) -C libSimOn --no-print-directory
+		@$(MAKE) $(OPT) -C libSimOn --no-print-directory
 
 clean:
 		@for subdir in $(PROJECTS); do \
-			$(MAKE) -C $$subdir clean || exit 1; \
+			$(MAKE) $(OPT) -C $$subdir clean || exit 1; \
 		done
 
 rebuild: clean all
+
+debug: OPT = debug
+debug: all
 
 install: all
 		@echo "not implemented yet"

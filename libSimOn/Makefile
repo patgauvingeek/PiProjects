@@ -1,4 +1,4 @@
-CXXFLAGS += -std=c++11 -fPIC -Wall -fexceptions
+CXXFLAGS  = -std=c++11 -fPIC -Wall -fexceptions
 LDFLAGS   = -shared
 
 TARGET_DIR=../lib/$(TARGET_ARCH)
@@ -37,3 +37,6 @@ clean:
 		@rm -rf $(OBJECTS) $(TARGET) $(DEPS)
 
 rebuild: clean all
+
+debug: CXXFLAGS += -DDEBUG -g
+debug: clean all
