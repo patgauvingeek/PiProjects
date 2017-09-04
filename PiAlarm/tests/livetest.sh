@@ -40,6 +40,9 @@ echo "000000000000" > ./tty
 
 ./../../bin/PiAlarm sensors.add "RfId" UART rfid
 
+./../../bin/PiAlarm notifiers.add "Bell" bell 4
+./creategpiofiles.sh 4
+
 ./../../bin/PiAlarm run &
 pid=$!
 echo
@@ -78,6 +81,11 @@ echo Users
 echo
 echo Sensors + Events
 ./../../bin/PiAlarm sensors.list +events
+
+echo
+echo Notifiers
+./../../bin/PiAlarm notifiers.list
+
 echo
 echo Events
 ./../../bin/PiAlarm events.list

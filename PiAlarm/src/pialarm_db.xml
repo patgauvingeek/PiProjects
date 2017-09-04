@@ -69,7 +69,7 @@
     <relate object="Event" limit="one" />        
   </relation>
 
-  <object name="AlarmNotifier">
+  <object name="Notifier">
     <field name="name" type="string" length="64" />
     <field name="gpio" type="string" length="8" />
     <field name="kind" type="integer">

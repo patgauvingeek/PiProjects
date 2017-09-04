@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "/usr/include/c++/5",
+                "/usr/include/x86_64-linux-gnu/c++/5",
+                "/usr/local/include",
+                "/usr/include",
+                "/usr/include/x86_64-linux-gnu",
+                "${workspaceRoot}"
+            ],
+            "defines": [],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/include/c++/5",
+                    "/usr/include/x86_64-linux-gnu/c++/5",
+                    "/usr/local/include",
+                    "/usr/include",
+                    "/usr/include/x86_64-linux-gnu",
+                    "${workspaceRoot}",
+                    "${workspaceRoot}/PiAlarm/db"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        }
+    ],
+    "version": 2
+}

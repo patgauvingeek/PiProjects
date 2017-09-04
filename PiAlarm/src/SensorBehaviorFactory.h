@@ -1,8 +1,10 @@
+#pragma once
+
 #include <memory>
 
-#include "pialarm.hpp"
 #include "ISensorBehavior.h"
 #include "AlarmSystem.h"
+#include "pialarm.hpp"
 
 namespace PiAlarm
 {

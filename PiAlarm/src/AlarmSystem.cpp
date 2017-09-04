@@ -1,6 +1,7 @@
 #include "AlarmSystem.h"
 
 #include "SensorBehaviorFactory.h"
+#include "TriggerFactory.h"
 
 namespace PiAlarm
 {
@@ -8,6 +9,7 @@ namespace PiAlarm
     : mState(AlarmSystemState::Unarmed)
     , mDB(db)
     , mSensorBehaviors()
+    , mTriggers()
   {}
 
   AlarmSystem::~AlarmSystem()
@@ -58,13 +60,6 @@ namespace PiAlarm
     return wAlarm;
   }
 
-  void AlarmSystem::raiseAlarm()
-  {
-    mState = AlarmSystemState::AlarmInProgress;
-
-    // AlarmNotifier
-  }
-
   db::User AlarmSystem::getUserByRfId(std::string rfid)
   {
     return litesql::select<db::User>(*mDB, db::User::Rfid == rfid)
@@ -75,6 +70,18 @@ namespace PiAlarm
   {
     return litesql::select<db::Event>(*mDB, db::Event::Id == id)
       .one();
+  }
+
+  void AlarmSystem::log(std::string method, std::string what, int severity)
+  {
+    db::Log wLog(*mDB);
+    std::time_t wNow = std::time(nullptr);
+    std::localtime(&wNow);
+    wLog.date = wNow;
+    wLog.severity = severity;
+    wLog.method = method;
+    wLog.what = what;
+    wLog.update();
   }
 
   void AlarmSystem::initialize()
@@ -89,12 +96,21 @@ namespace PiAlarm
       mSensorBehaviors.push_back(wSensorBehavior);
     }
 
+    auto wNotifiers = litesql::select<db::Notifier>(*mDB)
+      .orderBy(db::Notifier::Name)
+      .all();
+
+    for (auto &wNotifier : wNotifiers)
+    {
+      auto wTrigger = TriggerFactory::create(this, wNotifier);
+      mTriggers.push_back(wTrigger);
+    }
+
     insertEvent(db::Event::Trigger::SystemStarted);
   }
 
   void AlarmSystem::update() 
   {
-    // sensors
     for (auto &wSensorBehavior : mSensorBehaviors)
     {
       wSensorBehavior->update();
@@ -104,7 +120,11 @@ namespace PiAlarm
   void AlarmSystem::arm()
   {
     if (mState == AlarmSystemState::Unarmed)
-    {
+    { 
+      for (auto &wTrigger : mTriggers)
+      {
+        wTrigger->deactivate();
+      }
       mState = AlarmSystemState::Armed;
     }
   }
@@ -113,20 +133,21 @@ namespace PiAlarm
   { 
     if (mState != AlarmSystemState::Unarmed)
     {
+      for (auto &wTrigger : mTriggers)
+      {
+        wTrigger->deactivate();
+      }
       mState = AlarmSystemState::Unarmed;
     }
   }
-
-  void AlarmSystem::log(std::string method, std::string what, int severity)
-  {
-    db::Log wLog(*mDB);
-    std::time_t wNow = std::time(nullptr);
-    std::localtime(&wNow);
-    wLog.date = wNow;
-    wLog.severity = severity;
-    wLog.method = method;
-    wLog.what = what;
-    wLog.update();
+  
+  void AlarmSystem::raiseAlarm()
+  { 
+    for (auto &wTrigger : mTriggers)
+    {
+      wTrigger->activate();
+    }
+    mState = AlarmSystemState::AlarmInProgress;
   }
 
 }

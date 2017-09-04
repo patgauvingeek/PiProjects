@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ISensorBehavior.h"
+#include "ITrigger.h"
 
 namespace PiAlarm
 {
@@ -27,13 +28,15 @@ namespace PiAlarm
       ~AlarmSystem();
 
       // Database Access Methods
-      db::User getUserByRfId(std::string rfid);
-      db::Event getEventById(int id);
       db::Event insertEvent(int trigger);
       db::Event insertEvent(int trigger, db::Sensor &sensor);
       db::Event insertEvent(int trigger, db::Sensor &sensor, db::User &user);
       db::Alarm insertAlarm();
       db::Alarm insertAlarm(db::Event &event);
+
+      db::User getUserByRfId(std::string rfid);
+      db::Event getEventById(int id);
+
       void log(std::string method, std::string what, int severity);
 
       // Alarm System features
@@ -50,6 +53,8 @@ namespace PiAlarm
       AlarmSystemState::Type mState;
       std::shared_ptr<db::PiAlarm> mDB;
       std::vector<std::shared_ptr<ISensorBehavior>> mSensorBehaviors;
+      std::vector<std::shared_ptr<ITrigger>> mTriggers;
+      
   };
 
 }

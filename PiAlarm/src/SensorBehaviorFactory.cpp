@@ -8,8 +8,6 @@
 #include "ButtonSensorBehavior.h"
 #include "RfIdSensorBehavior.h"
 
-#include "pialarm.hpp"
-
 namespace PiAlarm
 {
   std::shared_ptr<ISensorBehavior> SensorBehaviorFactory::create(AlarmSystem *alarmSystem, db::Sensor const &sensor)

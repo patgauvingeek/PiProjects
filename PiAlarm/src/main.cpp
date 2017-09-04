@@ -33,6 +33,16 @@ const std::map<int, std::string> SENSOR_KIND_TO_TEXT =
   { db::Sensor::Kind::RfId, "RfId" },
 };
 
+const std::map<std::string, int> TEXT_TO_NOTIFIER_KIND =
+{
+  { "bell", db::Notifier::Kind::Bell }
+};
+
+const std::map<int, std::string> NOTIFIER_KIND_TO_TEXT =
+{
+  { db::Notifier::Kind::Bell, "Bell" }
+};
+
 const std::map<int, std::string> EVENT_TRIGGER_TO_TEXT =
 {
   { db::Event::Trigger::SystemStarted, "Started" },
@@ -68,6 +78,15 @@ std::string sensorAsString(db::Sensor &sensor)
   std::stringstream wStream;
   wStream << "[" << wKind << "] " << sensor.name 
           << " (" << sensor.gpio << ")";
+  return wStream.str();
+}
+
+std::string notifierAsString(db::Notifier &notifier)
+{
+  std::string wKind = findInMap(NOTIFIER_KIND_TO_TEXT, notifier.kind);
+  std::stringstream wStream;
+  wStream << "[" << wKind << "] " << notifier.name 
+          << " (" << notifier.gpio << ")";
   return wStream.str();
 }
 
@@ -204,6 +223,41 @@ int listSensors(const std::vector<std::string> &args, std::shared_ptr<db::PiAlar
   return 0;
 }
 
+int addNotifier(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
+{
+  if (args.size() != 4 && args.size() != 5)
+  {
+    return INVALID_ARGUMENTS;
+  }
+  db::Notifier wNotifier(*db);  
+  wNotifier.name = args[2];
+  auto wNotifierKind = TEXT_TO_NOTIFIER_KIND.find(args[3]);
+  if (wNotifierKind == TEXT_TO_NOTIFIER_KIND.end())
+  {
+    return INVALID_ARGUMENTS;
+  }
+  wNotifier.kind = wNotifierKind->second;
+  if (args.size() == 5)
+  {
+    wNotifier.gpio = args[4];
+  }
+  wNotifier.update();
+
+  return 0;
+}
+
+int listNotifiers(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
+{
+  auto wNotifiers = litesql::select<db::Notifier>(*db)
+    .all();
+
+  for (auto &wNotifier : wNotifiers)
+  {
+    std::cout << notifierAsString(wNotifier) << std::endl;
+  }
+  return 0;
+}
+
 int listEvents(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
   auto wEvents = litesql::select<db::Event>(*db)
@@ -290,6 +344,8 @@ static std::map<std::string, Command> COMMANDS = {
   { "users.delete", &deleteUser},
   { "sensors.add", &addSensor },
   { "sensors.list", &listSensors },
+  { "notifiers.add", &addNotifier },
+  { "notifiers.list", &listNotifiers },
   { "events.list", &listEvents },
   { "events.clear", &clearEvents },
   { "alarms.list", &listAlarms },

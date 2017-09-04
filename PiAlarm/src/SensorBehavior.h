@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include "GpIoSensor.h"
 #include "pialarm.hpp"
 #include "ISensorBehavior.h"
