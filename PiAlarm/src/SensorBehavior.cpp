@@ -5,7 +5,7 @@ namespace PiAlarm
   SensorBehavior::SensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor)
     : mAlarmSystem(alarmSystem)
     , mSensor(sensor)
-    , mGpIoSensor(sensor.gpio)
+    , mGpIoSensor(sensor.parameters)
   {}
 
   void SensorBehavior::update()

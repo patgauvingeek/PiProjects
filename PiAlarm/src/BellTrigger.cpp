@@ -6,7 +6,7 @@ namespace PiAlarm
 {
   BellTrigger::BellTrigger(AlarmSystem *alarmSystem, db::Notifier const & notifier)
     : AlarmTrigger(alarmSystem, notifier)
-    , mGpIo(notifier.gpio)
+    , mGpIo(notifier.parameters)
   {
     mGpIo.setDirection(SimOn::Direction::Output); 
   }

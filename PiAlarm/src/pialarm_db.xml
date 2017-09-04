@@ -16,7 +16,7 @@
   </object>
   <object name="Sensor">
     <field name="name" type="string" length="64" />
-    <field name="gpio" type="string" length="8" />
+    <field name="parameters" type="string" length="8" />
     <field name="kind" type="integer">
       <value name="Unspecified" value="0" />
       <value name="Door" value="1" />
@@ -25,9 +25,6 @@
       <value name="Button" value="4" />
       <value name="RfId" value="5" />
     </field>
-    <index unique="true">
-      <indexfield name="gpio"/>
-    </index>
   </object>
   <relation>
     <relate object="Sensor" handle="zone" />
@@ -71,7 +68,7 @@
 
   <object name="Notifier">
     <field name="name" type="string" length="64" />
-    <field name="gpio" type="string" length="8" />
+    <field name="parameters" type="string" length="8" />
     <field name="kind" type="integer">
       <value name="Unspecified" value="0" />
       <value name="Bell" value="1" />

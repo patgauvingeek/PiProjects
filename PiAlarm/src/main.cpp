@@ -85,7 +85,7 @@ std::string sensorAsString(db::Sensor &sensor)
   std::string wKind = findInMap(SENSOR_KIND_TO_TEXT, sensor.kind);
   std::stringstream wStream;
   wStream << "[" << wKind << "] " << sensor.name 
-          << " (" << sensor.gpio << ")";
+          << " (" << sensor.parameters << ")";
   return wStream.str();
 }
 
@@ -94,7 +94,7 @@ std::string notifierAsString(db::Notifier &notifier)
   std::string wKind = findInMap(NOTIFIER_KIND_TO_TEXT, notifier.kind);
   std::stringstream wStream;
   wStream << "[" << wKind << "] " << notifier.name 
-          << " (" << notifier.gpio << ")";
+          << " (" << notifier.parameters << ")";
   return wStream.str();
 }
 
@@ -195,7 +195,7 @@ int addSensor(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm>
   }
   db::Sensor wSensor(*db);  
   wSensor.name = args[2];
-  wSensor.gpio = args[3];
+  wSensor.parameters = args[3];
 
   auto wSensorKind = TEXT_TO_SENSOR_KIND.find(args[4]);
   if (wSensorKind == TEXT_TO_SENSOR_KIND.end())
@@ -247,7 +247,7 @@ int addNotifier(const std::vector<std::string> &args, std::shared_ptr<db::PiAlar
   wNotifier.kind = wNotifierKind->second;
   if (args.size() == 5)
   {
-    wNotifier.gpio = args[4];
+    wNotifier.parameters = args[4];
   }
   wNotifier.update();
 
