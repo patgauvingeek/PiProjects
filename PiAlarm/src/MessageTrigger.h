@@ -12,10 +12,13 @@ namespace PiAlarm
     : public virtual AlarmTrigger
   {
     public:
-      MessageTrigger(AlarmSystem *alarmSystem, db::Notifier const & notifier);
+      MessageTrigger(AlarmSystem *alarmSystem, db::Notifier const & notifier, std::string const &address);
 
       virtual void activate();
       virtual void deactivate();
+
+    private:
+      std::string mAddress;
 
   };
 }

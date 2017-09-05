@@ -38,12 +38,14 @@ const std::map<int, std::string> SENSOR_KIND_TO_TEXT =
 
 const std::map<std::string, int> TEXT_TO_NOTIFIER_KIND =
 {
-  { "bell", db::Notifier::Kind::Bell }
+  { "bell", db::Notifier::Kind::Bell },
+  { "message", db::Notifier::Kind::Message }
 };
 
 const std::map<int, std::string> NOTIFIER_KIND_TO_TEXT =
 {
-  { db::Notifier::Kind::Bell, "Bell" }
+  { db::Notifier::Kind::Bell, "Bell" },
+  { db::Notifier::Kind::Message, "Message" }
 };
 
 const std::map<int, std::string> EVENT_TRIGGER_TO_TEXT =

@@ -12,7 +12,7 @@ namespace PiAlarm
     : public virtual AlarmTrigger
   {
     public:
-      BellTrigger(AlarmSystem *alarmSystem, db::Notifier const & notifier);
+      BellTrigger(AlarmSystem *alarmSystem, db::Notifier const &notifier, std::string const &gpio);
 
       virtual void activate();
       virtual void deactivate();

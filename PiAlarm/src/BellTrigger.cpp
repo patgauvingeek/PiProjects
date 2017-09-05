@@ -4,9 +4,9 @@
 
 namespace PiAlarm
 {
-  BellTrigger::BellTrigger(AlarmSystem *alarmSystem, db::Notifier const & notifier)
+  BellTrigger::BellTrigger(AlarmSystem *alarmSystem, db::Notifier const & notifier, std::string const &gpio)
     : AlarmTrigger(alarmSystem, notifier)
-    , mGpIo(notifier.parameters)
+    , mGpIo(gpio)
   {
     mGpIo.setDirection(SimOn::Direction::Output); 
   }
