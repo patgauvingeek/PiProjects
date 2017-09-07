@@ -142,7 +142,7 @@ namespace PiAlarm
     }
   }
   
-  void AlarmSystem::raiseAlarm(db::Alarm const &alarm)
+  void AlarmSystem::raiseAlarm(db::Alarm &alarm)
   {
     for (auto &wTrigger : mTriggers)
     {

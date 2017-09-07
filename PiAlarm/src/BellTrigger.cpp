@@ -11,7 +11,7 @@ namespace PiAlarm
     mGpIo.setDirection(SimOn::Direction::Output); 
   }
   
-  void BellTrigger::activate(db::Alarm const &alarm)
+  void BellTrigger::activate(db::Alarm &alarm)
   {
     alarmSystem().log("BellTrigger::activate", "Bell has been activated.", db::Log::Severity::Debug);
     mGpIo.setValue(SimOn::Value::High);

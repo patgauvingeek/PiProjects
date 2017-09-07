@@ -1,6 +1,7 @@
 #include "MessageTrigger.h"
 
 #include <sstream>
+#include "StringHelper.h"
 #include "AlarmSystem.h"
 
 namespace PiAlarm
@@ -11,11 +12,11 @@ namespace PiAlarm
   { 
   }
   
-  void MessageTrigger::activate(db::Alarm const &alarm)
+  void MessageTrigger::activate(db::Alarm &alarm)
   {
     // http://www.raspberry-projects.com/pi/software_utilities/email/ssmtp-to-send-emails
     std::stringstream wCommandStream;
-    wCommandStream << "echo \"info on alert\" | mail -s \"INTRUSION ALERT!\" " << mAddress;
+    wCommandStream << "echo \"" << StringHelper::toString(alarm) << "\" | mail -s \"INTRUSION ALERT!\" " << mAddress;
     system(wCommandStream.str().c_str());
     alarmSystem().log("MessageTrigger::activate", "Message has been sent.", db::Log::Severity::Debug);
   }

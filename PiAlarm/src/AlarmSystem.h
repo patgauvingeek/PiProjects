@@ -45,7 +45,7 @@ namespace PiAlarm
 
       void arm();
       void unarm();
-      void raiseAlarm(db::Alarm const &alarm);
+      void raiseAlarm(db::Alarm &alarm);
 
       AlarmSystemState::Type state() const { return mState; }
 

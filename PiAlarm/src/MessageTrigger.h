@@ -14,7 +14,7 @@ namespace PiAlarm
     public:
       MessageTrigger(AlarmSystem *alarmSystem, db::Notifier const & notifier, std::string const &address);
 
-      virtual void activate(db::Alarm const &alarm);
+      virtual void activate(db::Alarm &alarm);
       virtual void deactivate();
 
     private:

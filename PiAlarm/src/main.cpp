@@ -1,6 +1,5 @@
 #include <functional>
 #include <iostream>
-#include <sstream>
 #include <map>
 #include <memory>
 #include <string>
@@ -10,6 +9,7 @@
 #include "pialarm.hpp"
 
 #include "Parameters.h"
+#include "StringHelper.h"
 #include "AlarmSystem.h"
 #include "RealTimeApplication.h"
 #include "RfIdSensor.h"
@@ -27,109 +27,11 @@ const std::map<std::string, int> TEXT_TO_SENSOR_KIND =
   { "rfid", db::Sensor::Kind::RfId }
 };
 
-const std::map<int, std::string> SENSOR_KIND_TO_TEXT =
-{
-  { db::Sensor::Kind::Door, "Door" },
-  { db::Sensor::Kind::Window, "Window" },
-  { db::Sensor::Kind::Motion, "Motion" },
-  { db::Sensor::Kind::Button, "Button" },
-  { db::Sensor::Kind::RfId, "RfId" },
-};
-
 const std::map<std::string, int> TEXT_TO_NOTIFIER_KIND =
 {
   { "bell", db::Notifier::Kind::Bell },
   { "message", db::Notifier::Kind::Message }
 };
-
-const std::map<int, std::string> NOTIFIER_KIND_TO_TEXT =
-{
-  { db::Notifier::Kind::Bell, "Bell" },
-  { db::Notifier::Kind::Message, "Message" }
-};
-
-const std::map<int, std::string> EVENT_TRIGGER_TO_TEXT =
-{
-  { db::Event::Trigger::SystemStarted, "Started" },
-  { db::Event::Trigger::SystemStopped, "Stopped" },
-  { db::Event::Trigger::SystemUnarmed, "System Unarmed" },
-  { db::Event::Trigger::SystemArming, "System Arming" },
-  { db::Event::Trigger::SystemArmed, "Armed" },
-  { db::Event::Trigger::DoorOpened, "Opened" },
-  { db::Event::Trigger::DoorClosed, "Closed" },
-  { db::Event::Trigger::WindowOpened, "Opened" },
-  { db::Event::Trigger::WindowClosed, "Closed" },
-  { db::Event::Trigger::MotionDetected, "Motion Detected" },
-};
-
-const std::map<int, std::string> LOG_SEVERITY_TO_TEXT =
-{
-  { db::Log::Severity::Debug, "Debug" },
-  { db::Log::Severity::Info, "Info" },
-  { db::Log::Severity::Warning, "Warning" },
-  { db::Log::Severity::Error, "Error" }
-};
-
-std::string findInMap(std::map<int, std::string> map, int key)
-{
-  auto wIterator = map.find(key);
-  if (wIterator != map.end())
-  {
-    return wIterator->second;
-  }
-  else
-  {
-    std::stringstream wStream;
-    wStream << "<" << key << ">";
-    return wStream.str();
-  }
-}
-
-std::string sensorAsString(db::Sensor &sensor)
-{
-  std::string wKind = findInMap(SENSOR_KIND_TO_TEXT, sensor.kind);
-  std::stringstream wStream;
-  wStream << "[" << wKind << "] " << sensor.name 
-          << " (" << sensor.parameters << ")";
-  return wStream.str();
-}
-
-std::string notifierAsString(db::Notifier &notifier)
-{
-  std::string wKind = findInMap(NOTIFIER_KIND_TO_TEXT, notifier.kind);
-  std::stringstream wStream;
-  wStream << "[" << wKind << "] " << notifier.name 
-          << " (" << notifier.parameters << ")";
-  return wStream.str();
-}
-
-std::string eventAsString(db::Event &event)
-{
-  auto wEventDate = event.date.value().asString("%m/%d/%y %h:%M:%s");
-  
-  std::string wSensorName("System");
-  try 
-  {
-    wSensorName = event.sensor().get().one().name;
-  } 
-  catch (litesql::NotFound e) { }
-
-  std::string wUserName("");
-  try 
-  {
-    wUserName = event.user().get().one().name;
-  } 
-  catch (litesql::NotFound e) { }
-
-  std::string wTrigger = findInMap(EVENT_TRIGGER_TO_TEXT, event.trigger);
-  std::stringstream wStream;
-  wStream << wEventDate << " - " << wSensorName << " " << wTrigger;
-  if (wUserName != "")
-  {
-    wStream << " by " << wUserName;
-  }
-  return wStream.str();
-}
 
 int addUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
@@ -179,15 +81,7 @@ int listUsers(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm>
 
   for (auto &wUser : wUsers)
   {
-    std::cout << wUser.name << ":" << wUser.rfid << std::endl;
-    if (wShowEvents)
-    {
-      auto wEvents = wUser.events().get().all();
-      for(auto &wEvent : wEvents)
-      {
-        std::cout << "  " << eventAsString(wEvent) << std::endl;
-      }
-    }
+    std::cout << PiAlarm::StringHelper::toString(wUser, wShowEvents) << std::endl;
   }
   return 0;
 }
@@ -237,15 +131,7 @@ int listSensors(const std::vector<std::string> &args, std::shared_ptr<db::PiAlar
 
   for (auto &wSensor : wSensors)
   {
-    std::cout << sensorAsString(wSensor) << std::endl;
-    if (wShowEvents)
-    {
-      auto wEvents = wSensor.events().get().all();
-      for(auto &wEvent : wEvents)
-      {
-        std::cout << "  " << eventAsString(wEvent) << std::endl;
-      }
-    }
+    std::cout << PiAlarm::StringHelper::toString(wSensor, wShowEvents) << std::endl;
   }
   return 0;
 }
@@ -277,7 +163,7 @@ int listNotifiers(const std::vector<std::string> &args, std::shared_ptr<db::PiAl
 
   for (auto &wNotifier : wNotifiers)
   {
-    std::cout << notifierAsString(wNotifier) << std::endl;
+    std::cout << PiAlarm::StringHelper::toString(wNotifier) << std::endl;
   }
   return 0;
 }
@@ -289,7 +175,7 @@ int listEvents(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm
     .all();
   for (auto &wEvent : wEvents)
   {
-    std::cout << eventAsString(wEvent) << std::endl;
+    std::cout << PiAlarm::StringHelper::toString(wEvent) << std::endl;
   }
   return 0;
 }
@@ -313,18 +199,7 @@ int listAlarms(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm
 
   for (auto &wAlarm : wAlarms)
   {
-    auto wAlarmDate = wAlarm.date.value().asString("%m/%d/%y %h:%M:%s");
-    std::cout << "Alarm at " << wAlarmDate << std::endl;
-    try
-    {
-      auto wEvent = wAlarm.event().get().one();
-      std::cout << "  " << eventAsString(wEvent) << std::endl;
-    } 
-    catch (litesql::NotFound e)
-    {
-      std::cout << "  " << args[2] << " is not a user." << std::endl;
-      return INVALID_ARGUMENTS;
-    }
+    std::cout << PiAlarm::StringHelper::toString(wAlarm) << std::endl;
   }
   return 0;
 }
@@ -337,9 +212,7 @@ int showLogs(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> 
 
   for (auto &wLog : wLogs)
   {
-    auto wDate = wLog.date.value().asString("%m/%d/%y %h:%M:%s");
-    std::cout <<  wDate << " >> " << wLog.method << " >> "
-              << "(" << findInMap(LOG_SEVERITY_TO_TEXT, wLog.severity) << ") " << wLog.what << std::endl;
+    std::cout << PiAlarm::StringHelper::toString(wLog) << std::endl;
   }
   return 0;
 }

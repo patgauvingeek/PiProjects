@@ -31,7 +31,7 @@ echo "Adding notifiers"
 ./../../bin/PiAlarm notifiers.add "Bell" bell 4
 ./creategpiofiles.sh 4
 
-./../../bin/PiAlarm notifiers.add "email" message x@y.com
+./../../bin/PiAlarm notifiers.add "email" message esro.net@gmail.com
 
 echo "Adding users"
 echo "" > stty_params

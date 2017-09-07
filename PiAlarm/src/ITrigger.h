@@ -10,7 +10,7 @@ namespace PiAlarm
     public:
       virtual ~ITrigger() {}
       
-      virtual void activate(db::Alarm const &alarm) = 0;
+      virtual void activate(db::Alarm &alarm) = 0;
       virtual void deactivate() = 0;
 
   };
