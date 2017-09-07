@@ -32,8 +32,8 @@ namespace PiAlarm
       auto wEvent = alarmSystem().insertEvent(db::Event::Trigger::MotionDetected, sensor());
       if (alarmSystem().state() == AlarmSystemState::Armed)
       {
-        alarmSystem().insertAlarm(wEvent);
-        alarmSystem().raiseAlarm();
+        auto wAlarm = alarmSystem().insertAlarm(wEvent);
+        alarmSystem().raiseAlarm(wAlarm);
       }
       mEventNotified = true;
     }

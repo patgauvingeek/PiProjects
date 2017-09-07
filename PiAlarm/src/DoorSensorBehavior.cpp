@@ -22,14 +22,14 @@ namespace PiAlarm
         try
         {
           auto wEvent = alarmSystem().getEventById(mExpectingUnarmedEventId);
-          alarmSystem().insertAlarm(wEvent);
-          alarmSystem().raiseAlarm();
+          auto wAlarm = alarmSystem().insertAlarm(wEvent);
+          alarmSystem().raiseAlarm(wAlarm);
         }
         catch (litesql::NotFound e)
         {
           alarmSystem().log("DoorSensorBehavior::update()", "Invalid Event Id !", db::Log::Severity::Error);
-          alarmSystem().insertAlarm();
-          alarmSystem().raiseAlarm();
+          auto wAlarm = alarmSystem().insertAlarm();
+          alarmSystem().raiseAlarm(wAlarm);
         }
         mExpectingUnarmedEventId = -1;
       }

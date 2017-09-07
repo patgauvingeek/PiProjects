@@ -142,11 +142,11 @@ namespace PiAlarm
     }
   }
   
-  void AlarmSystem::raiseAlarm()
+  void AlarmSystem::raiseAlarm(db::Alarm const &alarm)
   {
     for (auto &wTrigger : mTriggers)
     {
-      wTrigger->activate();
+      wTrigger->activate(alarm);
     }
     mState = AlarmSystemState::AlarmInProgress;
   }

@@ -1,5 +1,6 @@
 #include "MessageTrigger.h"
 
+#include <sstream>
 #include "AlarmSystem.h"
 
 namespace PiAlarm
@@ -10,14 +11,12 @@ namespace PiAlarm
   { 
   }
   
-  void MessageTrigger::activate()
+  void MessageTrigger::activate(db::Alarm const &alarm)
   {
     // http://www.raspberry-projects.com/pi/software_utilities/email/ssmtp-to-send-emails
-    // https://easyengine.io/tutorials/linux/ubuntu-postfix-gmail-smtp/
-    // https://www.linode.com/docs/email/postfix/configure-postfix-to-send-mail-using-gmail-and-google-apps-on-debian-or-ubuntu
-
-    //https://web.archive.org/web/20130423104300/http://mattlong.posterous.com/enable-cron-emails-using-gmail-on-ubuntu
-    // echo "Hello world email body" | mail -s "Test Subject" recipientname@domain.com
+    std::stringstream wCommandStream;
+    wCommandStream << "echo \"info on alert\" | mail -s \"INTRUSION ALERT!\" " << mAddress;
+    system(wCommandStream.str().c_str());
     alarmSystem().log("MessageTrigger::activate", "Message has been sent.", db::Log::Severity::Debug);
   }
   

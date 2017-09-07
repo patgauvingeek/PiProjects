@@ -14,7 +14,7 @@ namespace PiAlarm
     public:
       BellTrigger(AlarmSystem *alarmSystem, db::Notifier const &notifier, std::string const &gpio);
 
-      virtual void activate();
+      virtual void activate(db::Alarm const &alarm);
       virtual void deactivate();
       
     protected:
