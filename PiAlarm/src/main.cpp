@@ -13,6 +13,7 @@
 #include "AlarmSystem.h"
 #include "RealTimeApplication.h"
 #include "RfIdSensor.h"
+#include "WebSocketServer.h"
 
 const int INVALID_ARGUMENTS = 1;
 const int NOT_SUPPORTED_DATABASE = 2;
@@ -222,12 +223,14 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
   SimOn::RealTimeApplication::initialize();
 
   PiAlarm::AlarmSystem wAlarmSystem(db);
-
   wAlarmSystem.initialize();
+
+  PiAlarm::WebSocketServer wWebSocketServer;
 
   while(!SimOn::RealTimeApplication::isTerminated())
   {      
     wAlarmSystem.update();
+    wWebSocketServer.update();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
