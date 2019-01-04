@@ -1,4 +1,5 @@
 {
+  "C_Cpp.intelliSenseEngine": "Default",
   "files.associations": {
     "array": "cpp",
     "initializer_list": "cpp",
@@ -36,6 +37,11 @@
     "bitset": "cpp",
     "cmath": "cpp",
     "cstring": "cpp",
-    "regex": "cpp"
+    "regex": "cpp",
+    "string": "cpp",
+    "cstdarg": "cpp",
+    "unordered_map": "cpp",
+    "iomanip": "cpp",
+    "cinttypes": "cpp"
   }
 }
