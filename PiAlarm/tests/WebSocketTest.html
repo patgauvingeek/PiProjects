@@ -15,8 +15,8 @@
 
       ws.onopen = function() {
         // Web Socket is connected, send data using send()
-        //ws.send("Message to send");
         alert("OPEN !");
+        ws.send("commande\r\n");
       };
 
       ws.onmessage = function (evt) { 
