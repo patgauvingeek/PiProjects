@@ -56,13 +56,13 @@ namespace PiAlarm
     {
       close(connectingWebSocket.first);
     }
-    for(int connectingWebSocket : mWebSocketFileDescriptors)
+    for(auto webSocket : mWebSockets)
     {
-      close(connectingWebSocket);
+      close(webSocket.first);
     }
   }
 
-  void WebSocketServer::acceptNewWebSocket()
+  void WebSocketServer::acceptNewSocket()
   {
     struct sockaddr_in wClientAddress;
     int wClientAddressSize = sizeof(wClientAddress);
@@ -79,32 +79,28 @@ namespace PiAlarm
     mConnectingWebSockets.emplace(wWebSocketFileDescriptor, std::string());
   }
 
-  static bool endsWith(const std::string& str, const std::string& suffix)
+  void WebSocketServer::acceptNewWebSocket()
   {
-    return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
-  }
-
-  void WebSocketServer::readCommands()
-  {
+    std::vector<int> wRemoveWebSockets;
     for(auto connectingWebSocket : mConnectingWebSockets)
     {
       // web socket connection logic
-      char buffer[1024] = {0};
-      int wNumberOfBytes = recv(connectingWebSocket.first, buffer, 1024, 0);
-      if (wNumberOfBytes == 0)
+      char wBuffer[1024] = {0};
+      int wNumberOfBytes = recv(connectingWebSocket.first, wBuffer, 1024, 0);
+      if (wNumberOfBytes > 0)
       {
+        std::cout << "handshake chunk size: " << wNumberOfBytes << std::endl;
+        std::cout << "handshake chunk : " << std::string(wBuffer, wNumberOfBytes) << std::endl;
+        connectingWebSocket.second += std::string(wBuffer, wNumberOfBytes);
+      }
+      else if (wNumberOfBytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
+      {
+        close(connectingWebSocket.first);
+        wRemoveWebSockets.push_back(connectingWebSocket.first);
         continue;
       }
-      if (wNumberOfBytes < 0)
-      {
-        if (errno == EAGAIN || errno == EWOULDBLOCK)
-        {
-          continue;
-        }
-        close(connectingWebSocket.first); //+ remove from vector
-      }
-      connectingWebSocket.second += buffer;
-      if (!endsWith(connectingWebSocket.second, "\r\n\r\n"))
+      auto wMessageEndIndex = connectingWebSocket.second.find("\r\n\r\n", 4);
+      if (wMessageEndIndex == std::string::npos)
       {
         continue;
       }
@@ -113,39 +109,78 @@ namespace PiAlarm
       if (wLabelStartIndex == std::string::npos)
       {
         close(connectingWebSocket.first);
-        // todo remove
+        wRemoveWebSockets.push_back(connectingWebSocket.first);
+        continue;
       }
       auto wKeyStartIndex = wLabelStartIndex + wKeyLabel.size();
-      auto wKeyEndIndex = connectingWebSocket.second.find("\r", wKeyStartIndex);
+      auto wKeyEndIndex = connectingWebSocket.second.find("\r\n", wKeyStartIndex, 2);
       if (wKeyEndIndex == std::string::npos)
       {
         close(connectingWebSocket.first);
-        // todo remove
+        wRemoveWebSockets.push_back(connectingWebSocket.first);
+        continue;
       }
       auto wKey = connectingWebSocket.second.substr(wKeyStartIndex, wKeyEndIndex - wKeyStartIndex);
       static const std::string cWebSocketMagicString = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-      auto sha1 = Crypto::sha1(wKey + cWebSocketMagicString);    
-      auto wHandshake = std::string("HTTP/1.1 101 Web Socket Protocol Handshake\r\n") +
+      auto sha1 = Crypto::sha1(wKey + cWebSocketMagicString);
+      auto wHandshake = std::string("HTTP/1.1 101 Switching Protocols\r\n") +
         "Upgrade: websocket\r\n" +
         "Connection: Upgrade\r\n" +
         "Sec-WebSocket-Accept: " + Crypto::Base64::encode(sha1) + "\r\n" +
         "\r\n";
+      auto wBadRequest = std::string("HTTP/1.1 400 Bad Request\r\n") +
+        "\r\n";
       if (send(connectingWebSocket.first, wHandshake.c_str(), wHandshake.size(), 0) < 0)
       {
         close(connectingWebSocket.first);
-        // todo remove
+        wRemoveWebSockets.push_back(connectingWebSocket.first);
+        continue;
       }
+      std::cout << "transfer : " << connectingWebSocket.second.substr(wMessageEndIndex + 4) << std::endl;
+      mWebSockets.emplace(connectingWebSocket.first, connectingWebSocket.second.substr(wMessageEndIndex + 4));
+      wRemoveWebSockets.push_back(connectingWebSocket.first);
     }
-    for(int connectingWebSocket : mWebSocketFileDescriptors)
+    for (int removeWebSocket : wRemoveWebSockets)
     {
-      // listen for command
-
+      mConnectingWebSockets.erase(removeWebSocket);
     }
-    // valread = read( new_socket , buffer, 1024); 
-    // printf("%s\n",buffer ); 
-    // send(new_socket , hello , strlen(hello) , 0 ); 
-    // printf("Hello message sent\n"); 
-    // return 0; 
+  }
+
+  void WebSocketServer::readCommands()
+  {
+    std::vector<int> wRemoveWebSockets;
+    for(auto webSocket : mWebSockets)
+    { 
+      char wBuffer[1024] = {0};
+      int wNumberOfBytes = recv(webSocket.first, wBuffer, 1024, 0);
+      if (wNumberOfBytes > 0)
+      {
+        std::cout << "command chunk size: " << wNumberOfBytes << std::endl;
+        std::cout << "command chunk : " << std::string(wBuffer, wNumberOfBytes) << std::endl;
+        webSocket.second += std::string(wBuffer, wNumberOfBytes);
+      }
+      else if (wNumberOfBytes < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
+      {
+        std::cout << "error disconnect web socket" << std::endl;
+        close(webSocket.first);
+        wRemoveWebSockets.push_back(webSocket.first);
+        continue;
+      }
+      auto wCommandEndIndex = webSocket.second.find("\r\n\r\n", 4);
+      if (wCommandEndIndex == std::string::npos)
+      {
+        continue;
+      }
+      // since we don't accept commands yet, we just output the command.
+      std::cout << webSocket.second.substr(0, wCommandEndIndex) << std::endl;
+
+      std::cout << "transfer : " << webSocket.second.substr(wCommandEndIndex + 4) << std::endl;
+      webSocket.second = webSocket.second.substr(wCommandEndIndex + 4);
+    }
+    for (int removeWebSocket : wRemoveWebSockets)
+    {
+      mWebSockets.erase(removeWebSocket);
+    }
   }
 
   void WebSocketServer::sendUpdates()
@@ -155,6 +190,7 @@ namespace PiAlarm
 
   void WebSocketServer::update()
   {
+    acceptNewSocket();
     acceptNewWebSocket();
     readCommands();
     sendUpdates();
