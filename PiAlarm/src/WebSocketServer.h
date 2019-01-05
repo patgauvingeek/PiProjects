@@ -2,6 +2,9 @@
 
 #include <map>
 #include <string>
+#include <vector>
+
+#include "WebSocket.h"
 
 namespace PiAlarm
 {
@@ -11,15 +14,12 @@ namespace PiAlarm
       WebSocketServer();
       ~WebSocketServer();
       void update();
+
     private:
       void acceptNewSocket();
-      void acceptNewWebSocket();
-      void readCommands();
-      void sendUpdates();
 
       int mListeningSocketFileDescriptor;
-      std::map<int, std::string> mConnectingWebSockets;
-      std::map<int, std::string> mWebSockets;
+      std::vector<WebSocket> mWebSockets;
 
   };
 }
