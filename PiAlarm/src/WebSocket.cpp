@@ -111,21 +111,49 @@ namespace PiAlarm
         if (mNextContentLength == 126) 
         {
           // 2 next bytes is the size of content
-          mCurrentStateUpdate = []() {  };
-          close();
-          throw std::runtime_error("Not supported: 2 next bytes is the size of content");      
+          mNextContentLength = 0;
+          mCurrentStateUpdate = [&]() { this->process2BytesLength(); };
         }
         else if (mNextContentLength == 127)
         {
           // 8 next bytes is the size of content
-          mCurrentStateUpdate = []() {  };
-          close();
-          throw std::runtime_error("Not supported: 8 next bytes is the size of content");
+          mNextContentLength = 0;
+          mCurrentStateUpdate = [&]() { this->process8BytesLength(); };
         }
         else
         {
           mCurrentStateUpdate = [&]() { this->processContent(); };
         }
+      }
+
+      void process2BytesLength()
+      {
+        if (mRawStream.size() < 2)
+        {
+          return;
+        }
+        mNextContentLength = static_cast<std::size_t>(static_cast<unsigned char>(mRawStream[0])) << 8;
+        mNextContentLength += static_cast<std::size_t>(static_cast<unsigned char>(mRawStream[1]));
+        mRawStream = mRawStream.substr(2);
+        mCurrentStateUpdate = [&]() { this->processContent(); };
+      }
+
+      void process8BytesLength()
+      {
+        if (mRawStream.size() < 8)
+        {
+          return;
+        }
+        mNextContentLength = static_cast<std::size_t>(static_cast<unsigned char>(mRawStream[0])) << 56;
+        mNextContentLength += static_cast<std::size_t>(static_cast<unsigned char>(mRawStream[1])) << 48;
+        mNextContentLength += static_cast<std::size_t>(static_cast<unsigned char>(mRawStream[2])) << 40;
+        mNextContentLength += static_cast<std::size_t>(static_cast<unsigned char>(mRawStream[3])) << 32;
+        mNextContentLength += static_cast<std::size_t>(static_cast<unsigned char>(mRawStream[4])) << 24;
+        mNextContentLength += static_cast<std::size_t>(static_cast<unsigned char>(mRawStream[5])) << 16;
+        mNextContentLength += static_cast<std::size_t>(static_cast<unsigned char>(mRawStream[6])) << 8;
+        mNextContentLength += static_cast<std::size_t>(static_cast<unsigned char>(mRawStream[7]));
+        mRawStream = mRawStream.substr(8);
+        mCurrentStateUpdate = [&]() { this->processContent(); };
       }
 
       void processContent()
@@ -204,19 +232,19 @@ namespace PiAlarm
         else if (wLength >= 126 && wLength <= 65535)
         {
           wFrame += static_cast<char>(126);
-          wFrame += static_cast<char>(wLength >> 8 && 255);
+          wFrame += static_cast<char>((wLength >> 8) && 255);
           wFrame += static_cast<char>(wLength && 255);
         }
         else
         {
           wFrame += static_cast<char>(127);
-          wFrame += static_cast<char>(wLength >> 56 && 255);
-          wFrame += static_cast<char>(wLength >> 48 && 255);
-          wFrame += static_cast<char>(wLength >> 40 && 255);
-          wFrame += static_cast<char>(wLength >> 32 && 255);
-          wFrame += static_cast<char>(wLength >> 24 && 255);
-          wFrame += static_cast<char>(wLength >> 16 && 255);
-          wFrame += static_cast<char>(wLength >> 8 && 255);
+          wFrame += static_cast<char>((wLength >> 56) && 255);
+          wFrame += static_cast<char>((wLength >> 48) && 255);
+          wFrame += static_cast<char>((wLength >> 40) && 255);
+          wFrame += static_cast<char>((wLength >> 32) && 255);
+          wFrame += static_cast<char>((wLength >> 24) && 255);
+          wFrame += static_cast<char>((wLength >> 16) && 255);
+          wFrame += static_cast<char>((wLength >> 8) && 255);
           wFrame += static_cast<char>(wLength && 255);
         }
         wFrame += content;
