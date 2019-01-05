@@ -18,12 +18,14 @@
       ws.onopen = function() {
         // Web Socket is connected, send data using send()
         outputDiv.innerHTML += "Connected: sending sample command...<br>";
-        ws.send("commande\r\n");
+        ws.send("commande1\r\n\r\n");
+        ws.send("commande2\r\n\r\n");
+        ws.send("ping\r\n\r\n");
       };
 
       ws.onmessage = function (evt) { 
         //var received_msg = evt.data;
-        outputDiv.innerHTML += "Message received:" + evt.data + "<br>";
+        outputDiv.innerHTML += "Message received: " + evt.data + "<br>";
       };
 
       ws.onclose = function() {

@@ -51,7 +51,6 @@ namespace PiAlarm
   
   WebSocketServer::~WebSocketServer()
   {
-    std::cout << "WebSocketServer destroyed !" << std::endl;
     close(mListeningSocketFileDescriptor);
     for(auto &webSocket : mWebSockets)
     {

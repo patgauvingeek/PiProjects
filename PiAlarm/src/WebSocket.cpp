@@ -14,11 +14,14 @@
 namespace PiAlarm
 {
   class WebSocket::Impl
-  {      
+  {
     public:
       Impl(int socketFileDescriptor)
         : mIsClosed(false)
         , mSocketFileDescriptor(socketFileDescriptor)
+        , mRawStream()
+        , mNextContentLength(0)
+        , mContentStream()
         , mCurrentStateUpdate([&]() { this->processHandshake(); })
       {
         fcntl(socketFileDescriptor, F_SETFL, O_NONBLOCK);
@@ -29,7 +32,6 @@ namespace PiAlarm
       
       ~Impl()
       {
-        std::cout << "  WebSocket " << mSocketFileDescriptor << " destroyed !" << std::endl;
         close();
       }
 
@@ -62,7 +64,7 @@ namespace PiAlarm
           "Connection: Upgrade\r\n" +
           "Sec-WebSocket-Accept: " + Crypto::Base64::encode(sha1) + "\r\n" +
           "\r\n";
-        if (send(mSocketFileDescriptor, wHandshake.c_str(), wHandshake.size(), 0) < 0)
+        if (::send(mSocketFileDescriptor, wHandshake.c_str(), wHandshake.size(), 0) < 0)
         {
           close();
           return;
@@ -73,8 +75,98 @@ namespace PiAlarm
 
       void processHeader()
       {
-        std::cout << "header first pass: " << mSocketFileDescriptor << std::endl;
-        mCurrentStateUpdate = []() {  };
+        if (mRawStream.size() < 2)
+        {
+          return;
+        }
+
+        auto wFinRsvOpCode = static_cast<unsigned char>(mRawStream[0]);
+        auto wSecondByte = static_cast<unsigned char>(mRawStream[1]);
+        mRawStream = mRawStream.substr(2);
+
+        if (wFinRsvOpCode == 136)
+        {
+          // Disconnection requested by client.
+          mCurrentStateUpdate = []() {  };
+          close();
+          return;
+        }
+
+        if((wFinRsvOpCode & 0x80) == 0 || (wFinRsvOpCode & 0x0f) == 0)
+        {
+          mCurrentStateUpdate = []() {  };
+          close();
+          throw std::runtime_error("Not supported: fin rsv opcode");  
+        }
+
+        // Close connection if unmasked message from client (protocol error)
+        if(wSecondByte < 128) {
+          std::cout << "message from client not masked" << std::endl;
+          close();
+          return;
+        }
+
+        mNextContentLength = (wSecondByte & 127);
+
+        if (mNextContentLength == 126) 
+        {
+          // 2 next bytes is the size of content
+          mCurrentStateUpdate = []() {  };
+          close();
+          throw std::runtime_error("Not supported: 2 next bytes is the size of content");      
+        }
+        else if (mNextContentLength == 127)
+        {
+          // 8 next bytes is the size of content
+          mCurrentStateUpdate = []() {  };
+          close();
+          throw std::runtime_error("Not supported: 8 next bytes is the size of content");
+        }
+        else
+        {
+          mCurrentStateUpdate = [&]() { this->processContent(); };
+        }
+      }
+
+      void processContent()
+      {
+        if (mRawStream.size() < mNextContentLength + 4 /* mask size */)
+        {
+          return;
+        }
+        auto mContent = mRawStream.substr(0, mNextContentLength + 4 /* mask size */);
+
+        unsigned char wMask[4];
+        wMask[0] = static_cast<unsigned char>(mRawStream[0]);
+        wMask[1] = static_cast<unsigned char>(mRawStream[1]);
+        wMask[2] = static_cast<unsigned char>(mRawStream[2]);
+        wMask[3] = static_cast<unsigned char>(mRawStream[3]);
+        mRawStream = mRawStream.substr(4);
+
+        for(std::size_t wIndex = 0; wIndex < mNextContentLength; wIndex++)
+        {
+          mContentStream += static_cast<char>(mRawStream[wIndex] ^ wMask[wIndex % 4]);
+        }
+        mRawStream = mRawStream.substr(mNextContentLength);
+        mCurrentStateUpdate = [&]() { this->processHeader(); };
+      }
+
+      void processCommand()
+      {
+        auto wCommandEndIndex = mContentStream.find("\r\n\r\n", 4);
+        if (wCommandEndIndex == std::string::npos)
+        {
+          return;
+        }
+        auto wCommand = mContentStream.substr(0, wCommandEndIndex);
+        mContentStream = mContentStream.substr(wCommandEndIndex + 4);
+
+        if (wCommand.compare("ping") == 0)
+        {
+          send("pong");
+          return;
+        }
+        std::cout << "Unknown command \"" << wCommand << "\" sent by " << mSocketFileDescriptor << std::endl;
       }
       
       void update()
@@ -94,7 +186,41 @@ namespace PiAlarm
           close();
           return;
         }
-        mCurrentStateUpdate();       
+        mCurrentStateUpdate();
+        processCommand();
+      }
+
+      void send(const std::string &content)
+      {
+        std::size_t wLength = content.size();
+        std::string wFrame;
+
+        wFrame += static_cast<char>(129 /* one fragment text */);
+        
+        if (wLength < 126)
+        {
+          wFrame += static_cast<char>(wLength);
+        }
+        else if (wLength >= 126 && wLength <= 65535)
+        {
+          wFrame += static_cast<char>(126);
+          wFrame += static_cast<char>(wLength >> 8 && 255);
+          wFrame += static_cast<char>(wLength && 255);
+        }
+        else
+        {
+          wFrame += static_cast<char>(127);
+          wFrame += static_cast<char>(wLength >> 56 && 255);
+          wFrame += static_cast<char>(wLength >> 48 && 255);
+          wFrame += static_cast<char>(wLength >> 40 && 255);
+          wFrame += static_cast<char>(wLength >> 32 && 255);
+          wFrame += static_cast<char>(wLength >> 24 && 255);
+          wFrame += static_cast<char>(wLength >> 16 && 255);
+          wFrame += static_cast<char>(wLength >> 8 && 255);
+          wFrame += static_cast<char>(wLength && 255);
+        }
+        wFrame += content;
+        ::send(mSocketFileDescriptor, wFrame.c_str(), wFrame.size(), 0);
       }
 
       void close()
@@ -115,8 +241,9 @@ namespace PiAlarm
       bool mIsClosed;
       int mSocketFileDescriptor;
       std::string mRawStream;
+      std::size_t mNextContentLength;
       std::string mContentStream;
-
+      
       std::function<void ()> mCurrentStateUpdate;
 
   };
@@ -124,20 +251,17 @@ namespace PiAlarm
   WebSocket::WebSocket(int socketFileDescriptor)
     : mImplementation(new Impl(socketFileDescriptor))
   {
-    std::cout << "WebSocket::WebSocket(int)" << std::endl;
   }
 
   // move constructor
   WebSocket::WebSocket(WebSocket&& webSocket)
     : mImplementation(webSocket.mImplementation)
   {
-    std::cout << "WebSocket::WebSocket(WebSocket&&)" << std::endl;
     webSocket.mImplementation = nullptr;
   }     
   
   WebSocket::~WebSocket()
   {
-    std::cout << "WebSocket::~WebSocket()" << std::endl;
     if (mImplementation == nullptr)
     {
       return;
@@ -152,6 +276,15 @@ namespace PiAlarm
       return;
     }
     mImplementation->update();
+  }
+
+  void WebSocket::send(const std::string& content)
+  {
+    if (mImplementation == nullptr)
+    {
+      return;
+    }
+    mImplementation->send(content);
   }
 
   void WebSocket::close()
@@ -174,7 +307,6 @@ namespace PiAlarm
 
   WebSocket& WebSocket::operator=(WebSocket&& webSocket)
   {
-    std::cout << "WebSocket::operator=(WebSocket&&)" << std::endl;
     // Self-assignment detection
     if (&webSocket == this)
       return *this;

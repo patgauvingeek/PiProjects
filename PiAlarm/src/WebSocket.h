@@ -15,6 +15,7 @@ namespace PiAlarm
       ~WebSocket();
       
       void update();
+      void send(const std::string& content);
       void close();
       bool isClosed() const;
 
