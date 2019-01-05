@@ -3,10 +3,12 @@
 <html>
   <head>
   <script type = "text/javascript">
+
     function WebSocketTest() {
+      var outputDiv = document.getElementById("outputDiv");
       
       if ("WebSocket" in window == false) {
-        alert("WebSocket is not supported by your Browser!");
+        outputDiv.innerHTML += "WebSocket is not supported by your Browser!<br>";
         return;
       }
           
@@ -15,18 +17,18 @@
 
       ws.onopen = function() {
         // Web Socket is connected, send data using send()
-        alert("OPEN !");
+        outputDiv.innerHTML += "Connected: sending sample command...<br>";
         ws.send("commande\r\n");
       };
 
       ws.onmessage = function (evt) { 
         //var received_msg = evt.data;
-        alert("Message received...");
+        outputDiv.innerHTML += "Message received:" + evt.data + "<br>";
       };
 
       ws.onclose = function() {
         // websocket is closed.
-        alert("Connection is closed..."); 
+        outputDiv.innerHTML += "Connection is closed...<br>"; 
       };
     }
     </script>  
@@ -34,6 +36,7 @@
   <body>
     <div id = "sse">
       <a href = "javascript:WebSocketTest()">Run WebSocket</a>
-    </div>    
+    </div>
+    <div id="outputDiv"><b>Output Window</b><br></div>
   </body>
 </html>
