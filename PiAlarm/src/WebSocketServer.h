@@ -14,6 +14,7 @@ namespace PiAlarm
       WebSocketServer();
       ~WebSocketServer();
       void update();
+      void sendAll(const std::string &content);
 
     private:
       void acceptNewSocket();

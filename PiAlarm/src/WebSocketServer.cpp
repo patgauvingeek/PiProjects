@@ -90,4 +90,12 @@ namespace PiAlarm
     mWebSockets.erase(wWebSocketsToRemove, mWebSockets.end());
   }
 
+  void WebSocketServer::sendAll(const std::string &content)
+  {
+    for(auto &webSocket : mWebSockets)
+    {
+      webSocket.send(content);
+    }
+  }
+
 }
