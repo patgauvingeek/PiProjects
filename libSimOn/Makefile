@@ -1,5 +1,5 @@
 CXXFLAGS = -std=c++11 -fPIC -Wall -fexceptions
-LDFLAGS  = -shared
+LDFLAGS  = -shared -lcrypto
 
 TARGET_DIR=../lib/$(TARGET_ARCH)
 EXECUTABLE=libSimOn.so

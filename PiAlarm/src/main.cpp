@@ -225,7 +225,7 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
   PiAlarm::AlarmSystem wAlarmSystem(db);
   wAlarmSystem.initialize();
 
-  PiAlarm::WebSocketServer wWebSocketServer;
+  SimOn::WebSocketServer wWebSocketServer;
 
   while(!SimOn::RealTimeApplication::isTerminated())
   {      

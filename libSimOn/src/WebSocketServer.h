@@ -6,7 +6,7 @@
 
 #include "WebSocket.h"
 
-namespace PiAlarm
+namespace SimOn
 {
   class WebSocketServer
   {      

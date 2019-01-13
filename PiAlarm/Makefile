@@ -1,5 +1,5 @@
 CXXFLAGS = -std=c++11 -Idb -I../libSimOn/src -Wall -fexceptions -Wno-deprecated-declarations
-LDFLAGS  = -L../lib/$(TARGET_ARCH) -lSimOn -llitesql -llitesql-util -lcrypto
+LDFLAGS  = -L../lib/$(TARGET_ARCH) -lSimOn -llitesql -llitesql-util
 
 TARGET_DIR=../bin/$(TARGET_ARCH)
 EXECUTABLE=PiAlarm

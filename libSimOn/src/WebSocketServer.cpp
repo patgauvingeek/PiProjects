@@ -3,7 +3,8 @@
 #include "Crypto.h"
 
 #include <algorithm>
-#include <unistd.h> 
+#include <unistd.h>
+#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <stdlib.h> 
@@ -14,7 +15,7 @@
 
 #define PORT 15000 
 
-namespace PiAlarm
+namespace SimOn
 {
   WebSocketServer::WebSocketServer()
   {       
@@ -71,8 +72,9 @@ namespace PiAlarm
       }
       throw std::runtime_error("error: accept failed on listening socket"); 
     }
-    std::cout << "new socket " << wWebSocketFileDescriptor << std::endl;
-    mWebSockets.emplace_back(wWebSocketFileDescriptor);
+    std::stringstream wEndPoint;
+    wEndPoint << ::inet_ntoa(wClientAddress.sin_addr) << ":" << wClientAddress.sin_port;
+    mWebSockets.emplace_back(wWebSocketFileDescriptor, wEndPoint.str());
   }
 
   void WebSocketServer::update()

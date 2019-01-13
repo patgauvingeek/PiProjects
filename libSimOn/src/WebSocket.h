@@ -4,12 +4,12 @@
 #include <memory>
 #include <string>
 
-namespace PiAlarm
+namespace SimOn
 {
   class WebSocket
   {      
     public:
-      WebSocket(int socketFileDescriptor);
+      WebSocket(int socketFileDescriptor, const std::string &endpoint);
       WebSocket(const WebSocket&) = delete; // copy constructor disable
       WebSocket(WebSocket&& webSocket);     // move constructor
       ~WebSocket();

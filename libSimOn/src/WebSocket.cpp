@@ -11,20 +11,22 @@
 
 #include "Crypto.h"
 
-namespace PiAlarm
+namespace SimOn
 {
   class WebSocket::Impl
   {
     public:
-      Impl(int socketFileDescriptor)
+      Impl(int socketFileDescriptor, const std::string &endpoint)
         : mIsClosed(false)
         , mSocketFileDescriptor(socketFileDescriptor)
+        , mEndPoint(endpoint)
         , mRawStream()
         , mNextContentLength(0)
         , mContentStream()
         , mCurrentStateUpdate([&]() { this->processHandshake(); })
       {
         fcntl(socketFileDescriptor, F_SETFL, O_NONBLOCK);
+        std::cout << "new socket: " << mEndPoint << std::endl;
       }
 
       Impl(const Impl&) = delete; // copy constructor disable
@@ -268,6 +270,7 @@ namespace PiAlarm
     private:
       bool mIsClosed;
       int mSocketFileDescriptor;
+      std::string mEndPoint;
       std::string mRawStream;
       std::size_t mNextContentLength;
       std::string mContentStream;
@@ -276,8 +279,8 @@ namespace PiAlarm
 
   };
 
-  WebSocket::WebSocket(int socketFileDescriptor)
-    : mImplementation(new Impl(socketFileDescriptor))
+  WebSocket::WebSocket(int socketFileDescriptor, const std::string &endpoint)
+    : mImplementation(new Impl(socketFileDescriptor, endpoint))
   {
   }
 
