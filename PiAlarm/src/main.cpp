@@ -227,6 +227,11 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 
   SimOn::WebSocketServer wWebSocketServer;
 
+  wWebSocketServer.onNewConnection() += [&](SimOn::WebSocketServer & sender, SimOn::WebSocket &webSocket)
+    {
+      std::cout << "new socket: " << webSocket.endPoint() << std::endl;
+    };
+
   while(!SimOn::RealTimeApplication::isTerminated())
   {      
     wAlarmSystem.update();

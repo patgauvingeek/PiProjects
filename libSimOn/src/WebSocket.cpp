@@ -26,7 +26,6 @@ namespace SimOn
         , mCurrentStateUpdate([&]() { this->processHandshake(); })
       {
         fcntl(socketFileDescriptor, F_SETFL, O_NONBLOCK);
-        std::cout << "new socket: " << mEndPoint << std::endl;
       }
 
       Impl(const Impl&) = delete; // copy constructor disable
@@ -264,6 +263,11 @@ namespace SimOn
         return mIsClosed;
       }
 
+      const std::string & endPoint()
+      {
+        return mEndPoint;
+      }
+
 	    Impl& operator=(Impl&) = delete;
 	    Impl& operator=(Impl&&) = delete;
 
@@ -334,6 +338,11 @@ namespace SimOn
       return false;
     }
     return mImplementation->isClosed();
+  }
+
+  const std::string & WebSocket::endPoint()
+  {
+    return mImplementation->endPoint();
   }
 
   WebSocket& WebSocket::operator=(WebSocket&& webSocket)

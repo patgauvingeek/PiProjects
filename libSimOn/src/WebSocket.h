@@ -18,6 +18,7 @@ namespace SimOn
       void send(const std::string& content);
       void close();
       bool isClosed() const;
+      const std::string & endPoint();
 
 	    WebSocket& operator=(WebSocket& webSocket) = delete;
       // Move assignment

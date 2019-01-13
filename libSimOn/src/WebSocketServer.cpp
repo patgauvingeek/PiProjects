@@ -75,6 +75,7 @@ namespace SimOn
     std::stringstream wEndPoint;
     wEndPoint << ::inet_ntoa(wClientAddress.sin_addr) << ":" << wClientAddress.sin_port;
     mWebSockets.emplace_back(wWebSocketFileDescriptor, wEndPoint.str());
+    onNewConnection().raise(*this, mWebSockets.back());
   }
 
   void WebSocketServer::update()
