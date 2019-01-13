@@ -18,6 +18,7 @@ namespace SimOn
       void sendAll(const std::string &content);
 
       Event<WebSocketServer&, WebSocket&>& onNewConnection() { return mOnNewConnectionEvent; }
+      Event<WebSocketServer&, WebSocket&, const std::string &>& onCommandReceived() { return mOnCommandReceivedEvent; }
 
     private:
       void acceptNewSocket();
@@ -26,6 +27,7 @@ namespace SimOn
       std::vector<WebSocket> mWebSockets;
 
       Event<WebSocketServer&, WebSocket&> mOnNewConnectionEvent;
+      Event<WebSocketServer&, WebSocket&, const std::string &> mOnCommandReceivedEvent;
 
   };
 }

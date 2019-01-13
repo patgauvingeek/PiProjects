@@ -5,7 +5,7 @@
 
 namespace SimOn
 {
-  template <class TSender, class TArg>
+  template <class TSender, class ... TArgs>
   class Event
   {
     public:
@@ -13,22 +13,22 @@ namespace SimOn
         : mEventHandlers()
       {}
 
-      Event& operator+=(std::function<void (TSender, TArg)> eventHandler)
+      Event& operator+=(std::function<void (TSender, TArgs...)> eventHandler)
       {
         mEventHandlers.push_back(eventHandler);
         return *this;
       }
 
-      void raise(TSender sender, TArg arg)
+      void raise(TSender sender, TArgs... args)
       {
         for(auto eventHandler : mEventHandlers)
         {
-          eventHandler(sender, arg);
+          eventHandler(sender, args...);
         }
       }
 
     private:
-      std::vector<std::function<void (TSender, TArg)>> mEventHandlers;
+      std::vector<std::function<void (TSender, TArgs...)>> mEventHandlers;
 
   };
 }

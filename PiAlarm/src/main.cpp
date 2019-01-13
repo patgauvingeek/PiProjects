@@ -231,6 +231,15 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
     {
       std::cout << "new socket: " << webSocket.endPoint() << std::endl;
     };
+  wWebSocketServer.onCommandReceived() += [&](SimOn::WebSocketServer & sender, SimOn::WebSocket &webSocket, const std::string command)
+    {
+      if (command.compare("ping") == 0)
+      {
+        webSocket.send("pong");
+        return;
+      }
+      std::cout << "Unknown command \"" << command << "\" sent by " << webSocket.endPoint() << std::endl;
+    };
 
   while(!SimOn::RealTimeApplication::isTerminated())
   {      

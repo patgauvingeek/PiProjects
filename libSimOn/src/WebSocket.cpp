@@ -16,14 +16,16 @@ namespace SimOn
   class WebSocket::Impl
   {
     public:
-      Impl(int socketFileDescriptor, const std::string &endpoint)
-        : mIsClosed(false)
+      Impl(WebSocket * parent, int socketFileDescriptor, const std::string &endpoint)
+        : mParent(parent)
+        , mIsClosed(false)
         , mSocketFileDescriptor(socketFileDescriptor)
         , mEndPoint(endpoint)
         , mRawStream()
         , mNextContentLength(0)
         , mContentStream()
         , mCurrentStateUpdate([&]() { this->processHandshake(); })
+        , mOnCommandReceivedEvent()
       {
         fcntl(socketFileDescriptor, F_SETFL, O_NONBLOCK);
       }
@@ -190,12 +192,7 @@ namespace SimOn
         auto wCommand = mContentStream.substr(0, wCommandEndIndex);
         mContentStream = mContentStream.substr(wCommandEndIndex + 4);
 
-        if (wCommand.compare("ping") == 0)
-        {
-          send("pong");
-          return;
-        }
-        std::cout << "Unknown command \"" << wCommand << "\" sent by " << mSocketFileDescriptor << std::endl;
+        onCommandReceived().raise(*mParent, wCommand);
       }
       
       void update()
@@ -267,11 +264,22 @@ namespace SimOn
       {
         return mEndPoint;
       }
+    
+      Event<WebSocket &, const std::string &>& onCommandReceived()
+      {
+        return mOnCommandReceivedEvent;
+      }
 
 	    Impl& operator=(Impl&) = delete;
 	    Impl& operator=(Impl&&) = delete;
 
+      void setParent(WebSocket * parent)
+      {
+        mParent = parent;
+      }
+
     private:
+      WebSocket * mParent;
       bool mIsClosed;
       int mSocketFileDescriptor;
       std::string mEndPoint;
@@ -281,10 +289,12 @@ namespace SimOn
       
       std::function<void ()> mCurrentStateUpdate;
 
+      Event<WebSocket &, const std::string &> mOnCommandReceivedEvent;
+
   };
 
   WebSocket::WebSocket(int socketFileDescriptor, const std::string &endpoint)
-    : mImplementation(new Impl(socketFileDescriptor, endpoint))
+    : mImplementation(new Impl(this, socketFileDescriptor, endpoint))
   {
   }
 
@@ -293,6 +303,7 @@ namespace SimOn
     : mImplementation(webSocket.mImplementation)
   {
     webSocket.mImplementation = nullptr;
+    mImplementation->setParent(this);
   }     
   
   WebSocket::~WebSocket()
@@ -345,6 +356,11 @@ namespace SimOn
     return mImplementation->endPoint();
   }
 
+  Event<WebSocket &, const std::string &>& WebSocket::onCommandReceived()
+  {
+    return mImplementation->onCommandReceived();
+  }
+
   WebSocket& WebSocket::operator=(WebSocket&& webSocket)
   {
     // Self-assignment detection
@@ -360,6 +376,7 @@ namespace SimOn
     // Transfer ownership of a.m_ptr to m_ptr
     mImplementation = webSocket.mImplementation;
     webSocket.mImplementation = nullptr;
+    mImplementation->setParent(this);
 
     return *this;
   }

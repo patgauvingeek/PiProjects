@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 
+#include "Event.h"
+
 namespace SimOn
 {
   class WebSocket
@@ -19,6 +21,8 @@ namespace SimOn
       void close();
       bool isClosed() const;
       const std::string & endPoint();
+
+      Event<WebSocket &, const std::string &>& onCommandReceived();
 
 	    WebSocket& operator=(WebSocket& webSocket) = delete;
       // Move assignment
