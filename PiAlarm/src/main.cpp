@@ -229,10 +229,12 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 
   wWebSocketServer.onNewConnection() += [&](SimOn::WebSocketServer & sender, SimOn::WebSocket &webSocket)
     {
+      wAlarmSystem.log("WebSocket.onNewConnection", webSocket.endPoint(), db::Log::Severity::Info);
       std::cout << "new socket: " << webSocket.endPoint() << std::endl;
     };
   wWebSocketServer.onCommandReceived() += [&](SimOn::WebSocketServer & sender, SimOn::WebSocket &webSocket, const std::string command)
     {
+      wAlarmSystem.log("WebSocket.onCommandReceived", command, db::Log::Severity::Info);
       if (command.compare("ping") == 0)
       {
         webSocket.send("pong");
