@@ -22,7 +22,7 @@ namespace SimOn
       bool isClosed() const;
       const std::string & endPoint();
 
-      Event<WebSocket &, const std::string &>& onCommandReceived();
+      const Event<WebSocket &, const std::string &>& onCommandReceived();
 
 	    WebSocket& operator=(WebSocket& webSocket) = delete;
       // Move assignment

@@ -77,9 +77,9 @@ namespace SimOn
     mWebSockets.emplace_back(wWebSocketFileDescriptor, wEndPoint.str());
     mWebSockets.back().onCommandReceived() += [&] (WebSocket &webSocket, const std::string & command)
       {
-        onCommandReceived().raise(*this, webSocket, command);
+        mOnCommandReceivedEvent.raise(*this, webSocket, command);
       };
-    onNewConnection().raise(*this, mWebSockets.back());
+    mOnNewConnectionEvent.raise(*this, mWebSockets.back());
   }
 
   void WebSocketServer::update()

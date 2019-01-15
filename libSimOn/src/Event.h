@@ -13,10 +13,9 @@ namespace SimOn
         : mEventHandlers()
       {}
 
-      Event& operator+=(std::function<void (TSender, TArgs...)> eventHandler)
+      void operator+=(std::function<void (TSender, TArgs...)> eventHandler) const
       {
         mEventHandlers.push_back(eventHandler);
-        return *this;
       }
 
       void raise(TSender sender, TArgs... args)
@@ -28,7 +27,7 @@ namespace SimOn
       }
 
     private:
-      std::vector<std::function<void (TSender, TArgs...)>> mEventHandlers;
+      mutable std::vector<std::function<void (TSender, TArgs...)>> mEventHandlers;
 
   };
 }

@@ -192,7 +192,7 @@ namespace SimOn
         auto wCommand = mContentStream.substr(0, wCommandEndIndex);
         mContentStream = mContentStream.substr(wCommandEndIndex + 4);
 
-        onCommandReceived().raise(*mParent, wCommand);
+        mOnCommandReceivedEvent.raise(*mParent, wCommand);
       }
       
       void update()
@@ -265,7 +265,7 @@ namespace SimOn
         return mEndPoint;
       }
     
-      Event<WebSocket &, const std::string &>& onCommandReceived()
+      const Event<WebSocket &, const std::string &>& onCommandReceived()
       {
         return mOnCommandReceivedEvent;
       }
@@ -356,7 +356,7 @@ namespace SimOn
     return mImplementation->endPoint();
   }
 
-  Event<WebSocket &, const std::string &>& WebSocket::onCommandReceived()
+  const Event<WebSocket &, const std::string &>& WebSocket::onCommandReceived()
   {
     return mImplementation->onCommandReceived();
   }
