@@ -221,34 +221,35 @@ namespace SimOn
       void send(const std::string &content)
       {
         std::size_t wLength = content.size();
-        std::string wFrame;
+        std::stringstream wFrame;
 
-        wFrame += static_cast<char>(129 /* one fragment text */);
+        wFrame << static_cast<char>(129 /* one fragment text */);
         
         if (wLength < 126)
         {
-          wFrame += static_cast<char>(wLength);
+          wFrame << static_cast<char>(wLength);
         }
         else if (wLength >= 126 && wLength <= 65535)
         {
-          wFrame += static_cast<char>(126);
-          wFrame += static_cast<char>((wLength >> 8) && 255);
-          wFrame += static_cast<char>(wLength && 255);
+          wFrame << static_cast<char>(126);
+          wFrame << static_cast<char>((wLength >> 8) && 255);
+          wFrame << static_cast<char>(wLength && 255);
         }
         else
         {
-          wFrame += static_cast<char>(127);
-          wFrame += static_cast<char>((wLength >> 56) && 255);
-          wFrame += static_cast<char>((wLength >> 48) && 255);
-          wFrame += static_cast<char>((wLength >> 40) && 255);
-          wFrame += static_cast<char>((wLength >> 32) && 255);
-          wFrame += static_cast<char>((wLength >> 24) && 255);
-          wFrame += static_cast<char>((wLength >> 16) && 255);
-          wFrame += static_cast<char>((wLength >> 8) && 255);
-          wFrame += static_cast<char>(wLength && 255);
+          wFrame << static_cast<char>(127);
+          wFrame << static_cast<char>((wLength >> 56) && 255);
+          wFrame << static_cast<char>((wLength >> 48) && 255);
+          wFrame << static_cast<char>((wLength >> 40) && 255);
+          wFrame << static_cast<char>((wLength >> 32) && 255);
+          wFrame << static_cast<char>((wLength >> 24) && 255);
+          wFrame << static_cast<char>((wLength >> 16) && 255);
+          wFrame << static_cast<char>((wLength >> 8) && 255);
+          wFrame << static_cast<char>(wLength && 255);
         }
-        wFrame += content;
-        ::send(mSocketFileDescriptor, wFrame.c_str(), wFrame.size(), 0);
+        wFrame << content;
+        auto wFrameString = wFrame.str();
+        ::send(mSocketFileDescriptor, wFrameString.c_str(), wFrameString.size(), 0);
       }
 
       void close()
