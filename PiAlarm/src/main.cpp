@@ -227,10 +227,17 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 
   SimOn::WebSocketServer wWebSocketServer;
 
-  wWebSocketServer.onNewConnection() += [&](SimOn::WebSocketServer & sender, SimOn::WebSocket &webSocket)
+  wWebSocketServer.onNewConnection() += [&](SimOn::WebSocketServer & sender, const SimOn::WebSocket &webSocket)
     {
-      wAlarmSystem.log("WebSocket.onNewConnection", webSocket.endPoint(), db::Log::Severity::Info);
       std::cout << "new socket: " << webSocket.endPoint() << std::endl;
+      wAlarmSystem.log("WebSocket.onNewConnection", webSocket.endPoint(), db::Log::Severity::Info);
+    };
+  wWebSocketServer.onHandshakeCompleted() += [&](SimOn::WebSocketServer & sender, SimOn::WebSocket &webSocket)
+    {
+      std::cout << "Handshake completed: " << webSocket.endPoint() << std::endl;
+      wAlarmSystem.log("WebSocket.onHandshakeCompleted", webSocket.endPoint(), db::Log::Severity::Info);
+      webSocket.send("...");
+      // wAlarmSystem.notify(webSocket);
     };
   wWebSocketServer.onCommandReceived() += [&](SimOn::WebSocketServer & sender, SimOn::WebSocket &webSocket, const std::string command)
     {
@@ -240,6 +247,7 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
         webSocket.send("pong");
         return;
       }
+      webSocket.send("error!");
       std::cout << "Unknown command \"" << command << "\" sent by " << webSocket.endPoint() << std::endl;
     };
 

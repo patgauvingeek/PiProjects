@@ -20,8 +20,9 @@ namespace SimOn
       void send(const std::string& content);
       void close();
       bool isClosed() const;
-      const std::string & endPoint();
+      const std::string & endPoint() const;
 
+      const Event<WebSocket &>& onHandshakeCompleted();
       const Event<WebSocket &, const std::string &>& onCommandReceived();
 
 	    WebSocket& operator=(WebSocket& webSocket) = delete;

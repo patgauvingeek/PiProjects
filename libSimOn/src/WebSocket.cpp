@@ -25,7 +25,8 @@ namespace SimOn
         , mNextContentLength(0)
         , mContentStream()
         , mCurrentStateUpdate([&]() { this->processHandshake(); })
-        , mOnCommandReceivedEvent()
+        , mCommandReceivedEvent()
+        , mHandshakeCompletedEvent()
       {
         fcntl(socketFileDescriptor, F_SETFL, O_NONBLOCK);
       }
@@ -74,6 +75,7 @@ namespace SimOn
         }
         mRawStream = mRawStream.substr(wMessageEndIndex + 4);
         mCurrentStateUpdate = [&]() { this->processHeader(); };
+        mHandshakeCompletedEvent.raise(*mParent);
       }
 
       void processHeader()
@@ -192,7 +194,7 @@ namespace SimOn
         auto wCommand = mContentStream.substr(0, wCommandEndIndex);
         mContentStream = mContentStream.substr(wCommandEndIndex + 4);
 
-        mOnCommandReceivedEvent.raise(*mParent, wCommand);
+        mCommandReceivedEvent.raise(*mParent, wCommand);
       }
       
       void update()
@@ -255,19 +257,24 @@ namespace SimOn
         mIsClosed = true;
       }
 
-      bool isClosed()
+      bool isClosed() const
       {
         return mIsClosed;
       }
 
-      const std::string & endPoint()
+      const std::string & endPoint() const
       {
         return mEndPoint;
       }
     
       const Event<WebSocket &, const std::string &>& onCommandReceived()
       {
-        return mOnCommandReceivedEvent;
+        return mCommandReceivedEvent;
+      }
+
+      const Event<WebSocket &>& onHandshakeCompleted()
+      {
+        return mHandshakeCompletedEvent;
       }
 
 	    Impl& operator=(Impl&) = delete;
@@ -289,7 +296,8 @@ namespace SimOn
       
       std::function<void ()> mCurrentStateUpdate;
 
-      Event<WebSocket &, const std::string &> mOnCommandReceivedEvent;
+      Event<WebSocket &, const std::string &> mCommandReceivedEvent;
+      Event<WebSocket &> mHandshakeCompletedEvent;
 
   };
 
@@ -351,9 +359,14 @@ namespace SimOn
     return mImplementation->isClosed();
   }
 
-  const std::string & WebSocket::endPoint()
+  const std::string & WebSocket::endPoint() const
   {
     return mImplementation->endPoint();
+  }
+
+  const Event<WebSocket &>& WebSocket::onHandshakeCompleted()
+  {
+    return mImplementation->onHandshakeCompleted();
   }
 
   const Event<WebSocket &, const std::string &>& WebSocket::onCommandReceived()

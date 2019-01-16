@@ -18,6 +18,11 @@
 namespace SimOn
 {
   WebSocketServer::WebSocketServer()
+    : mListeningSocketFileDescriptor(0)
+    , mWebSockets()
+    , mNewConnectionEvent()
+    , mHandshakeCompletedEvent()
+    , mCommandReceivedEvent()
   {       
     // Creating socket file descriptor 
     if ((mListeningSocketFileDescriptor = socket(AF_INET, SOCK_STREAM, 0)) == 0) 
@@ -75,11 +80,15 @@ namespace SimOn
     std::stringstream wEndPoint;
     wEndPoint << ::inet_ntoa(wClientAddress.sin_addr) << ":" << wClientAddress.sin_port;
     mWebSockets.emplace_back(wWebSocketFileDescriptor, wEndPoint.str());
+    mWebSockets.back().onHandshakeCompleted() += [&] (WebSocket &webSocket)
+      {
+        mHandshakeCompletedEvent.raise(*this, webSocket);
+      };
     mWebSockets.back().onCommandReceived() += [&] (WebSocket &webSocket, const std::string & command)
       {
-        mOnCommandReceivedEvent.raise(*this, webSocket, command);
+        mCommandReceivedEvent.raise(*this, webSocket, command);
       };
-    mOnNewConnectionEvent.raise(*this, mWebSockets.back());
+    mNewConnectionEvent.raise(*this, mWebSockets.back());
   }
 
   void WebSocketServer::update()
