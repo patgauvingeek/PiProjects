@@ -10,6 +10,7 @@ namespace PiAlarm
     , mDB(db)
     , mSensorBehaviors()
     , mTriggers()
+    , mStateChangedEvent()
   {}
 
   AlarmSystem::~AlarmSystem()
@@ -127,6 +128,7 @@ namespace PiAlarm
         wTrigger->deactivate();
       }
       mState = AlarmSystemState::Armed;
+      mStateChangedEvent.raise(*this, mState);
     }
   }
 
@@ -139,6 +141,7 @@ namespace PiAlarm
         wTrigger->deactivate();
       }
       mState = AlarmSystemState::Unarmed;
+      mStateChangedEvent.raise(*this, mState);
     }
   }
   
@@ -148,7 +151,8 @@ namespace PiAlarm
     {
       wTrigger->activate(alarm);
     }
-    mState = AlarmSystemState::AlarmInProgress;
+    mState = AlarmSystemState::AlarmTripped;
+    mStateChangedEvent.raise(*this, mState);
   }
 
 }

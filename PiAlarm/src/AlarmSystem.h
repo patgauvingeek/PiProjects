@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "Event.h"
 #include "ISensorBehavior.h"
 #include "ITrigger.h"
 
@@ -17,7 +18,7 @@ namespace PiAlarm
     {
       Unarmed,
       Armed,
-      AlarmInProgress
+      AlarmTripped
     };
   }
 
@@ -48,12 +49,15 @@ namespace PiAlarm
       void raiseAlarm(db::Alarm &alarm);
 
       AlarmSystemState::Type state() const { return mState; }
+      const SimOn::Event<AlarmSystem&, AlarmSystemState::Type> & onStateChanged() { return mStateChangedEvent; };
 
     private:
       AlarmSystemState::Type mState;
       std::shared_ptr<db::PiAlarm> mDB;
       std::vector<std::shared_ptr<ISensorBehavior>> mSensorBehaviors;
       std::vector<std::shared_ptr<ITrigger>> mTriggers;
+
+      SimOn::Event<AlarmSystem&, AlarmSystemState::Type> mStateChangedEvent;
       
   };
 

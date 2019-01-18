@@ -250,6 +250,11 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
       webSocket.send("error!");
       std::cout << "Unknown command \"" << command << "\" sent by " << webSocket.endPoint() << std::endl;
     };
+  wAlarmSystem.onStateChanged() += [&](PiAlarm::AlarmSystem & sender, PiAlarm::AlarmSystemState::Type state)
+    {
+      auto wMessage = PiAlarm::WebSocketMessage::create<PiAlarm::AlarmSystemState::Type>("State", state);
+      wWebSocketServer.sendAll(wMessage);
+    };
 
   while(!SimOn::RealTimeApplication::isTerminated())
   {      
