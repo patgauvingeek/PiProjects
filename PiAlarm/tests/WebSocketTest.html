@@ -2,44 +2,45 @@
 
 <html>
   <head>
-  <script type = "text/javascript">
+    <script type = "text/javascript">
+      function WebSocketTest() {
+        var outputDiv = document.getElementById("outputDiv");
+        
+        if ("WebSocket" in window == false) {
+          outputDiv.innerHTML += "WebSocket is not supported by your Browser!<br>";
+          return;
+        }
 
-    function WebSocketTest() {
-      var outputDiv = document.getElementById("outputDiv");
-      
-      if ("WebSocket" in window == false) {
-        outputDiv.innerHTML += "WebSocket is not supported by your Browser!<br>";
-        return;
+        outputDiv.innerHTML += "Trying to connect...<br>";
+        // Let us open a web socket
+        var ws = new WebSocket("ws://localhost:15000");
+
+        ws.onopen = function() {
+          // Web Socket is connected, send data using send()
+          outputDiv.innerHTML += "Connected: sending sample command...<br>";
+          ws.send("commande1\r\n\r\n");
+          ws.send("commande2\r\n\r\n");
+          ws.send("ping\r\n\r\n");
+          ws.send("LONG-COMMAND-12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\r\n\r\n");
+        };
+
+        ws.onmessage = function (evt) { 
+          //var received_msg = evt.data;
+          outputDiv.innerHTML += "Message received: " + evt.data + "<br>";
+        };
+
+        ws.onclose = function() {
+          // websocket is closed.
+          outputDiv.innerHTML += "Connection is closed...<br>";
+          setTimeout(function(){WebSocketTest();}, 1000);
+        };
       }
-          
-      // Let us open a web socket
-      var ws = new WebSocket("ws://localhost:15000");
-
-      ws.onopen = function() {
-        // Web Socket is connected, send data using send()
-        outputDiv.innerHTML += "Connected: sending sample command...<br>";
-        ws.send("commande1\r\n\r\n");
-        ws.send("commande2\r\n\r\n");
-        ws.send("ping\r\n\r\n");
-        ws.send("LONG-COMMAND-12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890\r\n\r\n");
-      };
-
-      ws.onmessage = function (evt) { 
-        //var received_msg = evt.data;
-        outputDiv.innerHTML += "Message received: " + evt.data + "<br>";
-      };
-
-      ws.onclose = function() {
-        // websocket is closed.
-        outputDiv.innerHTML += "Connection is closed...<br>"; 
-      };
-    }
     </script>  
   </head>  
   <body>
-    <div id = "sse">
-      <a href = "javascript:WebSocketTest()">Run WebSocket</a>
-    </div>
     <div id="outputDiv"><b>Output Window</b><br></div>
   </body>
+  <script>
+    WebSocketTest();
+  </script>
 </html>

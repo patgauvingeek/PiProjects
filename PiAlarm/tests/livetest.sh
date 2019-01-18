@@ -53,6 +53,9 @@ pid=$!
 echo
 echo Run as $pid
 
+google-chrome WebSocketTest.html
+chrome_pid=$!
+
 sleep 5
 
 ./gpioupdateserie.sh
@@ -79,6 +82,9 @@ sleep 1
 
 echo killing $pid
 kill $pid
+
+echo killing chrome
+kill $chrome_pid
 
 echo
 echo Users
