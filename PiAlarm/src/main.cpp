@@ -13,6 +13,7 @@
 #include "AlarmSystem.h"
 #include "RealTimeApplication.h"
 #include "RfIdSensor.h"
+#include "WebSocketMessage.h"
 #include "WebSocketServer.h"
 
 const int INVALID_ARGUMENTS = 1;
