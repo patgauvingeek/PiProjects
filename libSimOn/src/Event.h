@@ -5,7 +5,7 @@
 
 namespace SimOn
 {
-  template <class TSender, class ... TArgs>
+  template <typename TSender, typename... TArgs>
   class Event
   {
     public:
