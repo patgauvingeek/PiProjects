@@ -2,6 +2,7 @@
 
 #include "AlarmSystem.h"
 
+#include <chrono>
 #include <sstream>
 #include <string>
 
@@ -13,7 +14,7 @@ namespace PiAlarm
     stringStream << "|" << field;
   }
 
-  // specific type conversion
+  // specific types conversion
   template <>
   void convert(std::stringstream &stringStream, AlarmSystemState::Type field)
   {
@@ -23,6 +24,12 @@ namespace PiAlarm
       case AlarmSystemState::Armed: stringStream << "|armed"; break;
       case AlarmSystemState::AlarmTripped: stringStream << "|tripped"; break;
     }
+  }
+
+  template <>
+  void convert(std::stringstream &stringStream, std::chrono::seconds field)
+  {
+    stringStream << "|" << field.count();
   }
 
   class WebSocketMessage

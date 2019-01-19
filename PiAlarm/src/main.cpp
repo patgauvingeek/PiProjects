@@ -253,7 +253,12 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
     };
   wAlarmSystem.onStateChanged() += [&](PiAlarm::AlarmSystem & sender, PiAlarm::AlarmSystemState::Type state)
     {
-      auto wMessage = PiAlarm::WebSocketMessage::create<PiAlarm::AlarmSystemState::Type>("State", state);
+      auto wMessage = PiAlarm::WebSocketMessage::create("State", state);
+      wWebSocketServer.sendAll(wMessage);
+    };
+  wAlarmSystem.onCountdownChanged() += [&](PiAlarm::AlarmSystem & sender, std::chrono::seconds countdown)
+    {
+      auto wMessage = PiAlarm::WebSocketMessage::create("Countdown", countdown);
       wWebSocketServer.sendAll(wMessage);
     };
 

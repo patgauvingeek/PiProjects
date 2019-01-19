@@ -24,6 +24,7 @@ namespace PiAlarm
       db::Sensor mSensor;
       bool mArming;
       std::chrono::time_point<std::chrono::system_clock> mArmTime;
+      std::chrono::duration<long int, std::ratio<1l, 1000000000l>> mLastRemainingTimeBeforeArming;
 
       SimOn::RfIdSensor mRfIdSensor;
       std::string mLastCode;      

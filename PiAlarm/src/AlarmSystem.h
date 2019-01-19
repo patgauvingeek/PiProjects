@@ -47,9 +47,11 @@ namespace PiAlarm
       void arm();
       void unarm();
       void raiseAlarm(db::Alarm &alarm);
+      void notifyCountdown(std::chrono::seconds countdown);
 
       AlarmSystemState::Type state() const { return mState; }
       const SimOn::Event<AlarmSystem&, AlarmSystemState::Type> & onStateChanged() { return mStateChangedEvent; };
+      const SimOn::Event<AlarmSystem&, const std::chrono::seconds&> & onCountdownChanged() { return mCountdownChangedEvent; };
 
     private:
       AlarmSystemState::Type mState;
@@ -58,6 +60,7 @@ namespace PiAlarm
       std::vector<std::shared_ptr<ITrigger>> mTriggers;
 
       SimOn::Event<AlarmSystem&, AlarmSystemState::Type> mStateChangedEvent;
+      SimOn::Event<AlarmSystem&, const std::chrono::seconds&> mCountdownChangedEvent;
       
   };
 

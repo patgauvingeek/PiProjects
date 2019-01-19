@@ -16,12 +16,23 @@ namespace PiAlarm
 
   void RfIdSensorBehavior::update()
   {
-    // waiting 15 second before arming the system
-    if (mArming && std::chrono::system_clock::now() >= mArmTime)
+    if (mArming)
     {
-      mArming = false;
-      mAlarmSystem->insertEvent(db::Event::Trigger::SystemArmed);
-      mAlarmSystem->arm();
+      // Updating the WebSockets with remaining time before the system is armed.
+      auto wRemainingTimeBeforeArming = mArmTime - std::chrono::system_clock::now();
+      if (mLastRemainingTimeBeforeArming - wRemainingTimeBeforeArming > std::chrono::seconds(1) )
+      {
+        mAlarmSystem->notifyCountdown(std::chrono::duration_cast<std::chrono::seconds>(wRemainingTimeBeforeArming));
+        mLastRemainingTimeBeforeArming = wRemainingTimeBeforeArming;
+      }
+
+      // waiting 15 second before arming the system
+      if (std::chrono::system_clock::now() >= mArmTime)
+      {
+        mArming = false;
+        mAlarmSystem->insertEvent(db::Event::Trigger::SystemArmed);
+        mAlarmSystem->arm();
+      }
     }
 
     // reading the sensor
@@ -46,6 +57,7 @@ namespace PiAlarm
         mArming = true;
         mAlarmSystem->insertEvent(db::Event::Trigger::SystemArming, mSensor, wUser);
         mArmTime = std::chrono::system_clock::now() + std::chrono::seconds(15);
+        mLastRemainingTimeBeforeArming = std::chrono::seconds(20);
       }
       else
       {

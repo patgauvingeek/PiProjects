@@ -155,4 +155,9 @@ namespace PiAlarm
     mStateChangedEvent.raise(*this, mState);
   }
 
+  void AlarmSystem::notifyCountdown(std::chrono::seconds countdown)
+  {
+    mCountdownChangedEvent.raise(*this, countdown);
+  }
+
 }
