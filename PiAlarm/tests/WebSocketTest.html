@@ -32,7 +32,8 @@
         ws.onclose = function() {
           // websocket is closed.
           outputDiv.innerHTML += "Connection is closed...<br>";
-          setTimeout(function(){WebSocketTest();}, 1000);
+          //setTimeout(function(){WebSocketTest();}, 1000);
+          window.close();
         };
       }
     </script>  

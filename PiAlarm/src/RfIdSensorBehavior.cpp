@@ -5,6 +5,8 @@
 
 namespace PiAlarm
 {
+  const std::chrono::seconds RfIdSensorBehavior::cCountdownBeforeArming(15);
+
   RfIdSensorBehavior::RfIdSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor,
                                          std::string const &device, std::string const &baudRate)
     : mAlarmSystem(alarmSystem)
@@ -20,18 +22,20 @@ namespace PiAlarm
     {
       // Updating the WebSockets with remaining time before the system is armed.
       auto wRemainingTimeBeforeArming = mArmTime - std::chrono::system_clock::now();
-      if (mLastRemainingTimeBeforeArming - wRemainingTimeBeforeArming > std::chrono::seconds(1) )
+      if (mLastRemainingTimeBeforeArming - wRemainingTimeBeforeArming >= std::chrono::seconds(1) )
       {
-        mAlarmSystem->notifyCountdown(std::chrono::duration_cast<std::chrono::seconds>(wRemainingTimeBeforeArming));
+        mCountdown--;
+        if (mCountdown == 0)
+        {
+          mArming = false;
+          mAlarmSystem->insertEvent(db::Event::Trigger::SystemArmed);
+          mAlarmSystem->arm();
+        }
+        else
+        {
+          mAlarmSystem->notifyCountdown(std::chrono::seconds(mCountdown));
+        }
         mLastRemainingTimeBeforeArming = wRemainingTimeBeforeArming;
-      }
-
-      // waiting 15 second before arming the system
-      if (std::chrono::system_clock::now() >= mArmTime)
-      {
-        mArming = false;
-        mAlarmSystem->insertEvent(db::Event::Trigger::SystemArmed);
-        mAlarmSystem->arm();
       }
     }
 
@@ -56,8 +60,10 @@ namespace PiAlarm
       {
         mArming = true;
         mAlarmSystem->insertEvent(db::Event::Trigger::SystemArming, mSensor, wUser);
-        mArmTime = std::chrono::system_clock::now() + std::chrono::seconds(15);
-        mLastRemainingTimeBeforeArming = std::chrono::seconds(20);
+        mArmTime = std::chrono::system_clock::now() + cCountdownBeforeArming;
+         // cCountdownBeforeArming + 1 sec to make sure notifyCountdown won't be skipped once.
+        mLastRemainingTimeBeforeArming = cCountdownBeforeArming + std::chrono::seconds(1);
+        mCountdown = cCountdownBeforeArming.count();
       }
       else
       {
