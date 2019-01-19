@@ -17,7 +17,7 @@
 
         ws.onopen = function() {
           // Web Socket is connected, send data using send()
-          outputDiv.innerHTML += "Connected: sending sample command...<br>";
+          outputDiv.innerHTML += "Connected: sending test commands...<br>";
           ws.send("commande1\r\n\r\n");
           ws.send("commande2\r\n\r\n");
           ws.send("ping\r\n\r\n");
