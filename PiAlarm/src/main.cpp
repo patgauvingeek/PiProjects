@@ -237,8 +237,8 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
     {
       std::cout << "Handshake completed: " << webSocket.endPoint() << std::endl;
       wAlarmSystem.log("WebSocket.onHandshakeCompleted", webSocket.endPoint(), db::Log::Severity::Info);
-      webSocket.send("...");
-      // wAlarmSystem.notify(webSocket);
+      auto wMessage = PiAlarm::WebSocketMessage::create("State", wAlarmSystem.state());
+      wWebSocketServer.sendAll(wMessage);
     };
   wWebSocketServer.onCommandReceived() += [&](SimOn::WebSocketServer & sender, SimOn::WebSocket &webSocket, const std::string command)
     {
