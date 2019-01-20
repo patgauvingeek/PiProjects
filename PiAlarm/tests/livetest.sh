@@ -53,7 +53,7 @@ pid=$!
 echo
 echo Run as $pid
 
-google-chrome WebSocketTest.html
+google-chrome livetest.html
 chrome_pid=$!
 
 sleep 5
