@@ -237,8 +237,8 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
     {
       std::cout << "Handshake completed: " << webSocket.endPoint() << std::endl;
       wAlarmSystem.log("WebSocket.onHandshakeCompleted", webSocket.endPoint(), db::Log::Severity::Info);
-      auto wMessage = PiAlarm::WebSocketMessage::create("State", wAlarmSystem.state());
-      wWebSocketServer.sendAll(wMessage);
+      auto wMessage = PiAlarm::WebSocketMessage::create("state", wAlarmSystem.state());
+      webSocket.send(wMessage);
     };
   wWebSocketServer.onCommandReceived() += [&](SimOn::WebSocketServer & sender, SimOn::WebSocket &webSocket, const std::string command)
     {
@@ -253,12 +253,12 @@ int run(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
     };
   wAlarmSystem.onStateChanged() += [&](PiAlarm::AlarmSystem & sender, PiAlarm::AlarmSystemState::Type state)
     {
-      auto wMessage = PiAlarm::WebSocketMessage::create("State", state);
+      auto wMessage = PiAlarm::WebSocketMessage::create("state", state);
       wWebSocketServer.sendAll(wMessage);
     };
   wAlarmSystem.onCountdownChanged() += [&](PiAlarm::AlarmSystem & sender, std::chrono::seconds countdown)
     {
-      auto wMessage = PiAlarm::WebSocketMessage::create("Countdown", countdown);
+      auto wMessage = PiAlarm::WebSocketMessage::create("countdown", countdown);
       wWebSocketServer.sendAll(wMessage);
     };
 
