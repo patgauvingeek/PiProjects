@@ -21,9 +21,13 @@ namespace PiAlarm
       virtual void updateLow();
 
     private:
+      static const std::chrono::seconds cCountdownToUnarm;
+
       EntranceState::Type mEntranceState;
       int mExpectingUnarmedEventId;
       std::chrono::time_point<std::chrono::system_clock> mExpectingUnarmedTime;
+      std::chrono::duration<long int, std::ratio<1l, 1000000000l>> mLastRemainingTimeToUnarm;
+      int mCountdown;
       
   };
 }

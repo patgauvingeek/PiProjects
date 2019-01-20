@@ -4,34 +4,47 @@
 
 namespace PiAlarm
 {
+  const std::chrono::seconds DoorSensorBehavior::cCountdownToUnarm(15);
+
   DoorSensorBehavior::DoorSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const & sensor, std::string const & gpio)
     : SensorBehavior(alarmSystem, sensor, gpio)
     , mEntranceState(EntranceState::Unknown)
     , mExpectingUnarmedEventId(-1)
     , mExpectingUnarmedTime()
+    , mLastRemainingTimeToUnarm()
   {}
 
   void DoorSensorBehavior::update()
   {
     // waiting 15 seconds before raising the alarm.
-    if (alarmSystem().state() == AlarmSystemState::Armed)
+    if (alarmSystem().state() == AlarmSystemState::Armed && mExpectingUnarmedEventId >= 0)
     {
-      if (mExpectingUnarmedEventId >= 0 &&
-          std::chrono::system_clock::now() >= mExpectingUnarmedTime)
+      // Updating the WebSockets with remaining time before the system is armed.
+      auto wRemainingTimeToUnarm = mExpectingUnarmedTime - std::chrono::system_clock::now();
+      if (mLastRemainingTimeToUnarm - wRemainingTimeToUnarm >= std::chrono::seconds(1) )
       {
-        try
+        mCountdown--;
+        if (mCountdown == 0)
         {
-          auto wEvent = alarmSystem().getEventById(mExpectingUnarmedEventId);
-          auto wAlarm = alarmSystem().insertAlarm(wEvent);
-          alarmSystem().raiseAlarm(wAlarm);
+          try
+          {
+            auto wEvent = alarmSystem().getEventById(mExpectingUnarmedEventId);
+            auto wAlarm = alarmSystem().insertAlarm(wEvent);
+            alarmSystem().raiseAlarm(wAlarm);
+          }
+          catch (litesql::NotFound e)
+          {
+            alarmSystem().log("DoorSensorBehavior::update()", "Invalid Event Id !", db::Log::Severity::Error);
+            auto wAlarm = alarmSystem().insertAlarm();
+            alarmSystem().raiseAlarm(wAlarm);
+          }
+          mExpectingUnarmedEventId = -1;
         }
-        catch (litesql::NotFound e)
+        else
         {
-          alarmSystem().log("DoorSensorBehavior::update()", "Invalid Event Id !", db::Log::Severity::Error);
-          auto wAlarm = alarmSystem().insertAlarm();
-          alarmSystem().raiseAlarm(wAlarm);
+          alarmSystem().notifyCountdown(std::chrono::seconds(mCountdown));
         }
-        mExpectingUnarmedEventId = -1;
+        mLastRemainingTimeToUnarm = wRemainingTimeToUnarm;
       }
     }
     else
@@ -67,6 +80,9 @@ namespace PiAlarm
       auto wEvent = alarmSystem().insertEvent(db::Event::Trigger::DoorOpened, sensor());
       mExpectingUnarmedEventId = wEvent.id;
       mExpectingUnarmedTime = std::chrono::system_clock::now() + std::chrono::seconds(15);
+      // cCountdownToUnarm + 1 sec to make sure notifyCountdown won't be skipped once.
+      mLastRemainingTimeToUnarm = cCountdownToUnarm + std::chrono::seconds(1);
+      mCountdown = cCountdownToUnarm.count();
     }
   }
 }

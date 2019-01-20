@@ -22,7 +22,7 @@ namespace PiAlarm
     {
       // Updating the WebSockets with remaining time before the system is armed.
       auto wRemainingTimeBeforeArming = mArmTime - std::chrono::system_clock::now();
-      if (mLastRemainingTimeBeforeArming - wRemainingTimeBeforeArming >= std::chrono::seconds(1) )
+      if (mLastRemainingTimeBeforeArming - wRemainingTimeBeforeArming >= std::chrono::seconds(1))
       {
         mCountdown--;
         if (mCountdown == 0)
