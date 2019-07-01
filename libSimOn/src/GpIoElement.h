@@ -15,6 +15,7 @@ namespace SimOn
 
       virtual void setDirection(Direction::Type const direction);
       virtual void setEdgeDetection(EdgeDetection::Type const edgeDetection);
+      virtual void setPullResistor(PullResistor::Type const resisitor);
       virtual void setValue(Value::Type const value);
       virtual Value::Type getValue() const;
       virtual std::string const & getNumber() const;

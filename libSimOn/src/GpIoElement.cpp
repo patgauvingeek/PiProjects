@@ -12,8 +12,14 @@ namespace SimOn
 
 #ifdef __arm__
       const std::string GPIO_FOLDER = "/sys/class/gpio/";
+      // do the following commands to install "gpio"
+      //   git clone git://git.drogon.net/wiringPi
+      //   cd wiringPi
+      //   ./build
+      const std::string GPIO_PROGRAM = "/usr/local/bin/gpio"
 #else
       const std::string GPIO_FOLDER = "gpio/";
+      const std::string GPIO_PROGRAM = "./gpio_mock.sh";
 #endif
 
       void writeData(std::string filename, std::string const & data, std::string action)
@@ -84,6 +90,24 @@ namespace SimOn
         }
       }
 
+      // ground sensing is up
+      // 3.3v sensing is down
+      virtual void setPullResistor(PullResistor::Type const pullResistor)
+      {
+        std::string type = pullResistor == PullResistor::Up
+          ? "down"
+          : "up";
+        std::stringstream command;
+        command << GPIO_PROGRAM << "-g mode" << mGpIo << type;
+        auto error = system(command.str().c_str());
+        if (error != 0)
+        {
+          std::stringstream message;
+          message << "Error #" << error << " whle executing \"" << GPIO_PROGRAM << "\" on GPIO " << mGpIo;
+          throw std::runtime_error(message.str());
+        }
+      }
+
       virtual void setValue(Value::Type const value)
       {
         std::stringstream filename;
@@ -135,6 +159,11 @@ namespace SimOn
   void GpIoElement::setEdgeDetection(EdgeDetection::Type const edgeDetection)
   {
     mImplementation->setEdgeDetection(edgeDetection);
+  }
+  
+  void GpIoElement::setPullResistor(PullResistor::Type const pullResistor)
+  {
+    mImplementation->setPullResistor(pullResistor);
   }
 
   void GpIoElement::setValue(Value::Type const value)

@@ -24,6 +24,15 @@ namespace SimOn
     };
   }
 
+  namespace PullResistor
+  {
+    enum Type
+    {
+      Up,
+      Down
+    };
+  }
+
   namespace Value
   {
     enum Type
@@ -40,6 +49,7 @@ namespace SimOn
 
       virtual void setDirection(Direction::Type const direction) = 0;
       virtual void setEdgeDetection(EdgeDetection::Type const edgeDetection) = 0;
+      virtual void setPullResistor(PullResistor::Type const resisitor) = 0;
       virtual void setValue(Value::Type const value) = 0;
       virtual Value::Type getValue() const = 0;
       virtual std::string const & getNumber() const = 0;
