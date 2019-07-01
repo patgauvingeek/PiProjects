@@ -12,6 +12,7 @@ namespace SimOn
         , mLastChangeTime()
       {
         mGpIo.setDirection(Direction::Input);
+        mGpIo.setPullResistor(PullResistor::Up);
       }
 
       GpIoSensorState::Type update()
