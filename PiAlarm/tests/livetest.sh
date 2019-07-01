@@ -14,16 +14,16 @@ fi
 
 echo "Adding sensors"
 ./../../bin/PiAlarm sensors.add "Main Entrance" door 0
-./creategpiofiles.sh 0
+./creategpiofiles.sh 0 0
 
 ./../../bin/PiAlarm sensors.add "Patio" window 1
-./creategpiofiles.sh 1
+./creategpiofiles.sh 1 0
 
 ./../../bin/PiAlarm sensors.add "Salon" motion 2
-./creategpiofiles.sh 2
+./creategpiofiles.sh 2 0
 
 ./../../bin/PiAlarm sensors.add "Button" button 3
-./creategpiofiles.sh 3
+./creategpiofiles.sh 3 1
 
 ./../../bin/PiAlarm sensors.add "RfId" rfid ./tty 9600
 

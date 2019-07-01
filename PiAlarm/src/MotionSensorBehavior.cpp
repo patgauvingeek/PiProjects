@@ -9,11 +9,11 @@ namespace PiAlarm
     , mEventNotified(false)
   {}
 
-  void MotionSensorBehavior::updateRising()
+  void MotionSensorBehavior::updateFalling()
   {
   }
 
-  void MotionSensorBehavior::updateHigh()
+  void MotionSensorBehavior::updateLow()
   {
     if (gpIoSensor().elasped() > std::chrono::milliseconds(500))
     {
@@ -21,11 +21,11 @@ namespace PiAlarm
     }
   }
 
-  void MotionSensorBehavior::updateFalling()
+  void MotionSensorBehavior::updateRising()
   {
   }
 
-  void MotionSensorBehavior::updateLow()
+  void MotionSensorBehavior::updateHigh()
   {
     if (!mEventNotified && gpIoSensor().elasped() > std::chrono::milliseconds(500))
     {

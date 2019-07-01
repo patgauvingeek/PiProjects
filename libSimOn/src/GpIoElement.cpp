@@ -98,12 +98,12 @@ namespace SimOn
           ? "down"
           : "up";
         std::stringstream command;
-        command << GPIO_PROGRAM << "-g mode" << mGpIo << type;
+        command << GPIO_PROGRAM << " -g mode " << mGpIo << " " << type;
         auto error = system(command.str().c_str());
         if (error != 0)
         {
           std::stringstream message;
-          message << "Error #" << error << " whle executing \"" << GPIO_PROGRAM << "\" on GPIO " << mGpIo;
+          message << "Error #" << error << " while executing \"" << GPIO_PROGRAM << "\" on GPIO " << mGpIo;
           throw std::runtime_error(message.str());
         }
       }

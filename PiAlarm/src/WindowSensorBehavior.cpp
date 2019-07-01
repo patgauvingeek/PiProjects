@@ -9,11 +9,11 @@ namespace PiAlarm
     , mEntranceState(EntranceState::Unknown)
   {}
 
-  void WindowSensorBehavior::updateRising()
+  void WindowSensorBehavior::updateFalling()
   {
   }
 
-  void WindowSensorBehavior::updateHigh()
+  void WindowSensorBehavior::updateLow()
   {
     if (mEntranceState != EntranceState::Closed && gpIoSensor().elasped() > std::chrono::milliseconds(500))
     {
@@ -22,11 +22,11 @@ namespace PiAlarm
     }
   }
 
-  void WindowSensorBehavior::updateFalling()
+  void WindowSensorBehavior::updateRising()
   {
   }
 
-  void WindowSensorBehavior::updateLow()
+  void WindowSensorBehavior::updateHigh()
   {    
     if (mEntranceState != EntranceState::Opened && gpIoSensor().elasped() > std::chrono::milliseconds(500))
     {

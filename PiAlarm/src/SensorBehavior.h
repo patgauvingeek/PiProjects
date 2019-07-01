@@ -18,10 +18,10 @@ namespace PiAlarm
       virtual void update();
 
     protected:
-      virtual void updateRising() = 0;
-      virtual void updateHigh() = 0;
       virtual void updateFalling() = 0;
       virtual void updateLow() = 0;
+      virtual void updateRising() = 0;
+      virtual void updateHigh() = 0;
 
       AlarmSystem & alarmSystem() { return *mAlarmSystem; }
       db::Sensor & sensor() { return mSensor; }

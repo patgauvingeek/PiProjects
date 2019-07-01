@@ -8,7 +8,7 @@ if [ ! -d gpio/gpio$1 ]; then
     mkdir gpio/gpio$1
 fi
 
-echo "1" > gpio/gpio$1/value
+echo "$2" > gpio/gpio$1/value
 echo "" > gpio/gpio$1/direction
 
 

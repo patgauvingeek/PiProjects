@@ -15,10 +15,10 @@ namespace PiAlarm
       virtual void update() override;
 
     protected:
-      virtual void updateRising();
-      virtual void updateHigh();
       virtual void updateFalling();
       virtual void updateLow();
+      virtual void updateRising();
+      virtual void updateHigh();
 
     private:
       static const std::chrono::seconds cCountdownToUnarm;

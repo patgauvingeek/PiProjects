@@ -55,11 +55,11 @@ namespace PiAlarm
     SensorBehavior::update();
   }
 
-  void DoorSensorBehavior::updateRising()
+  void DoorSensorBehavior::updateFalling()
   {
   }
 
-  void DoorSensorBehavior::updateHigh()
+  void DoorSensorBehavior::updateLow()
   {    
     if (mEntranceState != EntranceState::Closed && gpIoSensor().elasped() > std::chrono::milliseconds(500))
     {
@@ -68,11 +68,11 @@ namespace PiAlarm
     }
   }
 
-  void DoorSensorBehavior::updateFalling()
+  void DoorSensorBehavior::updateRising()
   {    
   }
   
-  void DoorSensorBehavior::updateLow()
+  void DoorSensorBehavior::updateHigh()
   {
     if (mEntranceState != EntranceState::Opened && gpIoSensor().elasped() > std::chrono::milliseconds(500))
     {
