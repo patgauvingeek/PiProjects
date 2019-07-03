@@ -10,6 +10,6 @@ namespace PiAlarm
   class SensorBehaviorFactory
   {
     public: 
-      static std::shared_ptr<ISensorBehavior> create(AlarmSystem *alarmSystem, db::Sensor const &sensor);
+      static std::shared_ptr<ISensorBehavior> create(AlarmSystem *alarmSystem, db::Sensor &sensor);
   };
 }

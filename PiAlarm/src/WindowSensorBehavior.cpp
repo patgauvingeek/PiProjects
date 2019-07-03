@@ -8,11 +8,7 @@ namespace PiAlarm
     : SensorBehavior(alarmSystem, sensor, gpio)
     , mEntranceState(EntranceState::Unknown)
   {}
-
-  void WindowSensorBehavior::updateFalling()
-  {
-  }
-
+  
   void WindowSensorBehavior::updateLow()
   {
     if (mEntranceState != EntranceState::Closed && gpIoSensor().elasped() > std::chrono::milliseconds(500))
@@ -20,10 +16,6 @@ namespace PiAlarm
       mEntranceState = EntranceState::Closed;
       alarmSystem().insertEvent(db::Event::Trigger::WindowClosed, sensor());
     }
-  }
-
-  void WindowSensorBehavior::updateRising()
-  {
   }
 
   void WindowSensorBehavior::updateHigh()

@@ -15,13 +15,15 @@ namespace PiAlarm
     public:
       SensorBehavior(AlarmSystem *alarmSystem, db::Sensor const &sensor, std::string const &gpio);
       
+      virtual void arm() {};
+      virtual void unarm() {};
       virtual void update();
 
     protected:
-      virtual void updateFalling() = 0;
-      virtual void updateLow() = 0;
-      virtual void updateRising() = 0;
-      virtual void updateHigh() = 0;
+      virtual void updateFalling() {};
+      virtual void updateLow() {};
+      virtual void updateRising() {};
+      virtual void updateHigh() {};
 
       AlarmSystem & alarmSystem() { return *mAlarmSystem; }
       db::Sensor & sensor() { return mSensor; }

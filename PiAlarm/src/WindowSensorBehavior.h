@@ -12,10 +12,8 @@ namespace PiAlarm
       WindowSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const &sensor, std::string const &gpio);
       
     protected:
-      virtual void updateFalling();
-      virtual void updateLow();
-      virtual void updateRising();
-      virtual void updateHigh();
+      virtual void updateLow() override;
+      virtual void updateHigh() override;
 
     private:
       EntranceState::Type mEntranceState;

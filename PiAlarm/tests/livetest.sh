@@ -19,17 +19,18 @@ echo "Adding sensors"
 ./../../bin/PiAlarm sensors.add "Patio" window 1
 ./creategpiofiles.sh 1 0
 
-./../../bin/PiAlarm sensors.add "Salon" motion 2
+./../../bin/PiAlarm sensors.add "Salon" motion 2 3
 ./creategpiofiles.sh 2 0
+./creategpiofiles.sh 3 0
 
-./../../bin/PiAlarm sensors.add "Button" button 3
-./creategpiofiles.sh 3 1
+./../../bin/PiAlarm sensors.add "Button" button 4
+./creategpiofiles.sh 4 1
 
 ./../../bin/PiAlarm sensors.add "RfId" rfid ./tty 9600
 
 echo "Adding notifiers"
-./../../bin/PiAlarm notifiers.add "Bell" bell 4
-./creategpiofiles.sh 4
+./../../bin/PiAlarm notifiers.add "Bell" bell 5
+./creategpiofiles.sh 5
 
 ./../../bin/PiAlarm notifiers.add "email" message esro.net@gmail.com
 
@@ -53,7 +54,7 @@ pid=$!
 echo
 echo Run as $pid
 
-google-chrome livetest.html
+google-chrome livetest.html &
 chrome_pid=$!
 
 sleep 5
@@ -68,17 +69,27 @@ echo "" > ./tty
 sleep 20
 echo System armed
 
+#Motion Sensor power test
+MsDirection=$(cat ./gpio/gpio3/direction)
+MsState=$(cat ./gpio/gpio3/value)
+echo Motion Sensor Power Test: $MsDirection, $MsState
+
 ./gpioupdateserie.sh
 
 echo System expecting unarmed
 sleep 20
-echo Unarmed never occured
+echo Alarm triggered
 
 echo Unarming the system
 echo "A1B2C3D4E5E1" > ./tty
 sleep 1
 echo "" > ./tty
 sleep 1
+
+#Motion Sensor power test
+MsDirection=$(cat ./gpio/gpio3/direction)
+MsState=$(cat ./gpio/gpio3/value)
+echo Motion Sensor Power Test: $MsDirection, $MsState
 
 echo killing $pid
 kill $pid

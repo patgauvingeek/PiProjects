@@ -6,7 +6,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceRoot}/bin/PiAlarm",
-      "args": ["users.add", "Patrick"],
+      "args": ["run"],
       "stopAtEntry": false,
       "cwd": "${workspaceRoot}/PiAlarm/tests",
       "environment": [

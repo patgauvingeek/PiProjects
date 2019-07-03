@@ -17,6 +17,8 @@ namespace PiAlarm
       RfIdSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const &sensor,
                          std::string const &device, std::string const &baudRate);
       
+      virtual void arm() {}
+      virtual void unarm() {}
       virtual void update();
 
     private:

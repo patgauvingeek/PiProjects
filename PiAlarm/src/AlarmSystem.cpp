@@ -91,7 +91,7 @@ namespace PiAlarm
     auto wSensors = litesql::select<db::Sensor>(*mDB)
       .orderBy(db::Sensor::Name)
       .all();
-   
+
     for (auto &wSensor : wSensors)
     {
       auto wSensorBehavior = SensorBehaviorFactory::create(this, wSensor);
@@ -122,7 +122,11 @@ namespace PiAlarm
   void AlarmSystem::arm()
   {
     if (mState == AlarmSystemState::Unarmed)
-    { 
+    {
+      for (auto &wSensorBehavior : mSensorBehaviors)
+      {
+        wSensorBehavior->arm();
+      }
       for (auto &wTrigger : mTriggers)
       {
         wTrigger->deactivate();
@@ -136,6 +140,10 @@ namespace PiAlarm
   { 
     if (mState != AlarmSystemState::Unarmed)
     {
+      for (auto &wSensorBehavior : mSensorBehaviors)
+      {
+        wSensorBehavior->unarm();
+      }
       for (auto &wTrigger : mTriggers)
       {
         wTrigger->deactivate();

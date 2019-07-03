@@ -55,10 +55,6 @@ namespace PiAlarm
     SensorBehavior::update();
   }
 
-  void DoorSensorBehavior::updateFalling()
-  {
-  }
-
   void DoorSensorBehavior::updateLow()
   {    
     if (mEntranceState != EntranceState::Closed && gpIoSensor().elasped() > std::chrono::milliseconds(500))
@@ -66,10 +62,6 @@ namespace PiAlarm
       mEntranceState = EntranceState::Closed;
       alarmSystem().insertEvent(db::Event::Trigger::DoorClosed, sensor());
     }
-  }
-
-  void DoorSensorBehavior::updateRising()
-  {    
   }
   
   void DoorSensorBehavior::updateHigh()

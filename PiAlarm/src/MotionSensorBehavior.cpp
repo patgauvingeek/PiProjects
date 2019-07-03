@@ -4,13 +4,22 @@
 
 namespace PiAlarm
 {
-  MotionSensorBehavior::MotionSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const &sensor, std::string const &gpio)
+  MotionSensorBehavior::MotionSensorBehavior(AlarmSystem *alarmSystem, db::Sensor const &sensor, std::string const &gpio, std::string const &gpioPower)
     : SensorBehavior(alarmSystem, sensor, gpio)
     , mEventNotified(false)
-  {}
-
-  void MotionSensorBehavior::updateFalling()
+    , mGpIoPower(gpioPower)
   {
+    mGpIoPower.setDirection(SimOn::Direction::Output);
+  }
+
+  void MotionSensorBehavior::arm()
+  {
+    mGpIoPower.setValue(SimOn::Value::High);
+  }
+
+  void MotionSensorBehavior::unarm()
+  {
+    mGpIoPower.setValue(SimOn::Value::Low);
   }
 
   void MotionSensorBehavior::updateLow()
@@ -19,10 +28,6 @@ namespace PiAlarm
     {
       mEventNotified = false;
     }
-  }
-
-  void MotionSensorBehavior::updateRising()
-  {
   }
 
   void MotionSensorBehavior::updateHigh()

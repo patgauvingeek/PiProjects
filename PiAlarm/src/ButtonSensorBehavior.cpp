@@ -29,7 +29,4 @@ namespace PiAlarm
     alarmSystem().log("updateRising", "button up", db::Log::Severity::Debug);
   }
 
-  void ButtonSensorBehavior::updateHigh()
-  {
-  }
 }
