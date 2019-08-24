@@ -32,7 +32,7 @@ namespace PiAlarm
             auto wAlarm = alarmSystem().insertAlarm(wEvent);
             alarmSystem().raiseAlarm(wAlarm);
           }
-          catch (litesql::NotFound e)
+          catch (litesql::NotFound &e)
           {
             alarmSystem().log("DoorSensorBehavior::update()", "Invalid Event Id !", db::Log::Severity::Error);
             auto wAlarm = alarmSystem().insertAlarm();

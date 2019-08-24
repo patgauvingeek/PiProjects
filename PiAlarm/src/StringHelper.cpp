@@ -109,14 +109,14 @@ namespace PiAlarm
     {
       wSensorName = event.sensor().get().one().name;
     } 
-    catch (litesql::NotFound e) { }
+    catch (litesql::NotFound &e) { }
   
     std::string wUserName("");
     try 
     {
       wUserName = event.user().get().one().name;
     } 
-    catch (litesql::NotFound e) { }
+    catch (litesql::NotFound &e) { }
   
     std::string wTrigger = findInMap(EVENT_TRIGGER_TO_TEXT, event.trigger);
     std::stringstream wStream;
@@ -138,7 +138,7 @@ namespace PiAlarm
       auto wEvent = alarm.event().get().one();
       wStream << std::endl << "  " << toString(wEvent);
     } 
-    catch (litesql::NotFound e)
+    catch (litesql::NotFound &e)
     { }
     return wStream.str();
   }

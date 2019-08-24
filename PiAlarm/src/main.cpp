@@ -67,7 +67,7 @@ int addUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> d
 
     return 0;
   } 
-  catch (litesql::NotFound e)
+  catch (litesql::NotFound &e)
   {
     std::cout << "No RFID device found in the database..." << std::flush;
     return SENSOR_NOT_FOUND;
@@ -96,7 +96,7 @@ int deleteUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm
       .one();
     wUsers.del();
   } 
-  catch (litesql::NotFound e)
+  catch (litesql::NotFound &e)
   {
     std::cout << "  " << args[2] << " is not a user." << std::endl;
     return INVALID_ARGUMENTS;

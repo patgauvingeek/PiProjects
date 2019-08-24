@@ -72,7 +72,7 @@ namespace PiAlarm
         mAlarmSystem->unarm();
       }
     }
-    catch (litesql::NotFound e)
+    catch (litesql::NotFound &e)
     {
       mAlarmSystem->log("RfIdSensorBehavior::update()", "Invalid RF ID", db::Log::Severity::Error);
     }
