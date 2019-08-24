@@ -42,4 +42,4 @@ logs: all
 
 update: clean
 		@echo "Updating pi..."
-		@scp -r libSimOn PiAlarm PiMorse pi@192.168.0.8:/home/pi/PiProjects
+		@scp -r libSimOn PiAlarm PiMorse Makefile 192.168.0.8:~/PiProjects

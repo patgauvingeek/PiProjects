@@ -1,14 +1,10 @@
 install dependencies
 --------------------
-sudo apt-get install sqlite3 libsqlite3-dev expat libexpat1 libexpat1-dev [sqlite3-doc] libssl-dev
-
-do the following commands to install "gpio"
-  git clone git://git.drogon.net/wiringPi
-  cd wiringPi
-  ./build
+sudo apt-get install git sqlite3 libsqlite3-dev wiringpi expat libexpat1 libexpat1-dev libssl-dev [sqlite3-doc]
 
 install litesql
 ---------------
+0.3.17.0 (0.3.18.0 has a bug: https://sourceforge.net/p/litesql/bugs/48)
 ./configure
 make
 sudo make install

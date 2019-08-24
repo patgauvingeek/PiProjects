@@ -16,7 +16,7 @@ namespace SimOn
       //   git clone git://git.drogon.net/wiringPi
       //   cd wiringPi
       //   ./build
-      const std::string GPIO_PROGRAM = "/usr/local/bin/gpio"
+      const std::string GPIO_PROGRAM = "/usr/local/bin/gpio";
 #else
       const std::string GPIO_FOLDER = "gpio/";
       const std::string GPIO_PROGRAM = "./gpio_mock.sh";
