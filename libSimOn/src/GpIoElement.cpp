@@ -12,10 +12,6 @@ namespace SimOn
 
 #ifdef __arm__
       const std::string GPIO_FOLDER = "/sys/class/gpio/";
-      // do the following commands to install "gpio"
-      //   git clone git://git.drogon.net/wiringPi
-      //   cd wiringPi
-      //   ./build
       const std::string GPIO_PROGRAM = "/usr/local/bin/gpio";
 #else
       const std::string GPIO_FOLDER = "gpio/";
