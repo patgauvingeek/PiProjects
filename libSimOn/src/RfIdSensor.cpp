@@ -13,7 +13,7 @@ namespace SimOn
       std::string mDevice;
 
     public:      
-      // RDM6300 device on Raspberry Pi is "/dev/ttyAMA0"
+      // RDM6300 device on Raspberry Pi is "/dev/serial0"
       // RDM6300 Baud Rate is 9600
       // Tests device is "./tty"
       RfIdSensorImpl(std::string device, std::string baudRate)

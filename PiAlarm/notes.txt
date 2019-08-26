@@ -12,3 +12,6 @@ sudo make install
 update shared libraries 
 -----------------------
 sudo ldconfig -v
+
+
+Disable serial console with raspi-config but keep uART enable to make RDM6300 work properly.
