@@ -13,5 +13,15 @@ update shared libraries
 -----------------------
 sudo ldconfig -v
 
+Raspberry Pi Config
+-------------------
+1. Disable serial console with raspi-config but keep uART enable to make RDM6300 work properly.
+2. Add "dtoverlay=pwm-2chan" in "/boot/config.txt" and reboot (http://blog.oddbit.com/post/2017-09-26-some-notes-on-pwm-on-the-raspberry-pi/)
 
-Disable serial console with raspi-config but keep uART enable to make RDM6300 work properly.
+
+PC SPEAKER
+----------
+http://pages.mtu.edu/~suits/notefreqs.html
+
+period = 1 / frequency
+duty_cycle = period / 2 (can be used to create special syntetiser effects)
