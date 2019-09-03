@@ -23,5 +23,5 @@ PC SPEAKER
 ----------
 http://pages.mtu.edu/~suits/notefreqs.html
 
-period = 1 / frequency
+period = (1 / frequency) * 1e+9 
 duty_cycle = period / 2 (can be used to create special syntetiser effects)
