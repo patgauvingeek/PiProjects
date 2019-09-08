@@ -117,5 +117,5 @@ echo Alarms
 ./../../bin/PiAlarm alarms.list
 echo
 echo Logs
-./../../bin/PiAlarm logs
+./../../bin/PiAlarm logs.list
 echo

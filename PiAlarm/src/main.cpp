@@ -217,7 +217,7 @@ int listAlarms(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm
   return 0;
 }
 
-int showLogs(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
+int listLogs(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
   auto wLogs = litesql::select<db::Log>(*db)
     .orderBy(db::Log::Id)
@@ -317,7 +317,7 @@ static std::map<std::string, Command> COMMANDS = {
   { "events.clear", &clearEvents },
   { "events.tail", &tailEvents },
   { "alarms.list", &listAlarms },
-  { "logs.show", &showLogs },
+  { "logs.list", &listLogs },
   { "logs.tail", &tailLogs },
   { "run", &run },
 };
