@@ -1,39 +1,11 @@
-#include <fstream>
-#include <iostream>
+#include "GpIoElement.h"
+#include "SysFsHelper.h"
+
 #include <sstream>
 #include <stdexcept>
-#include "GpIoElement.h"
 
 namespace SimOn
 {
-  class SysFsHelper
-  {
-    public:
-      static void writeData(std::string const &filename, std::string const &data, std::string const &action, std::string const &item)
-      {
-        std::ofstream fileStream(filename);
-        if (fileStream.is_open() == false)
-        {
-          std::stringstream msg;
-          msg << "OPERATION FAILED: Unable to " << action << item << ".";
-          throw std::runtime_error(msg.str());
-        }
-        fileStream << data;
-      }
-
-      static void readData(std::string const &filename, std::string &data, std::string const &action, std::string const &item)
-      {
-        std::ifstream fileStream(filename);
-        if (fileStream.is_open() == false)
-        {
-          std::stringstream msg;
-          msg << "OPERATION FAILED: Unable to " << action << item << ".";
-          throw std::runtime_error(msg.str());
-        }
-        fileStream >> data;
-      }
-  };
-
   class GpIoElementImpl
   {
     private:
