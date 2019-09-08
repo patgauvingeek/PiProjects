@@ -12,7 +12,7 @@ namespace SimOn
     private:
 
 #ifdef __arm__
-      const std::string PWM_FOLDER = "/sys/class/pwm/pwmchip0";
+      const std::string PWM_FOLDER = "/sys/class/pwm/pwmchip0/";
 #else
       const std::string PWM_FOLDER = "pwmchip/";
 #endif
