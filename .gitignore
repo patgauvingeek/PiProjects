@@ -7,4 +7,4 @@ gpio
 */tests/stty_params
 */tests/tty
 \.vscode/ipch
-music/device
+music/script/device
