@@ -64,7 +64,6 @@ int addUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> d
     std::cout << wRfId << std::endl;
     wUser.rfid = wRfId;
     wUser.update();
-
     return 0;
   } 
   catch (litesql::NotFound &e)
@@ -77,10 +76,8 @@ int addUser(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> d
 int listUsers(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
   bool wShowEvents = (args.size() == 3 && args[2] == "+events");
-
   auto wUsers = litesql::select<db::User>(*db)
     .all();
-
   for (auto &wUser : wUsers)
   {
     std::cout << PiAlarm::StringHelper::toString(wUser, wShowEvents) << std::endl;
@@ -120,17 +117,14 @@ int addSensor(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm>
   wSensor.kind = wSensorKind->second;
   wSensor.parameters = PiAlarm::Parameters::toParameters(args, 4);
   wSensor.update();
-
   return 0;
 }
 
 int listSensors(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
   bool wShowEvents = (args.size() == 3 && args[2] == "+events");
-
   auto wSensors = litesql::select<db::Sensor>(*db)
     .all();
-
   for (auto &wSensor : wSensors)
   {
     std::cout << PiAlarm::StringHelper::toString(wSensor, wShowEvents) << std::endl;
@@ -154,7 +148,6 @@ int addNotifier(const std::vector<std::string> &args, std::shared_ptr<db::PiAlar
   wNotifier.kind = wNotifierKind->second;
   wNotifier.parameters = PiAlarm::Parameters::toParameters(args, 4);
   wNotifier.update();
-
   return 0;
 }
 
@@ -162,7 +155,6 @@ int listNotifiers(const std::vector<std::string> &args, std::shared_ptr<db::PiAl
 {
   auto wNotifiers = litesql::select<db::Notifier>(*db)
     .all();
-
   for (auto &wNotifier : wNotifiers)
   {
     std::cout << PiAlarm::StringHelper::toString(wNotifier) << std::endl;
@@ -173,11 +165,31 @@ int listNotifiers(const std::vector<std::string> &args, std::shared_ptr<db::PiAl
 int listEvents(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
   auto wEvents = litesql::select<db::Event>(*db)
-    .orderBy(db::Event::Id, false)
+    .orderBy(db::Event::Id)
     .all();
   for (auto &wEvent : wEvents)
   {
     std::cout << PiAlarm::StringHelper::toString(wEvent) << std::endl;
+  }
+  return 0;
+}
+
+int tailEvents(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
+{
+  SimOn::RealTimeApplication::initialize();
+
+  int wLastId = -1;
+  while(!SimOn::RealTimeApplication::isTerminated())
+  {
+    auto wEvents = litesql::select<db::Event>(*db, db::Event::Id > wLastId)
+      .orderBy(db::Event::Id)
+      .all();
+    for (auto &wEvent : wEvents)
+    {
+      std::cout << PiAlarm::StringHelper::toString(wEvent) << std::endl;
+      wLastId = wEvent.id;
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
   return 0;
 }
@@ -196,9 +208,8 @@ int clearEvents(const std::vector<std::string> &args, std::shared_ptr<db::PiAlar
 int listAlarms(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
   auto wAlarms = litesql::select<db::Alarm>(*db)
-    .orderBy(db::Alarm::Id, false)
+    .orderBy(db::Alarm::Id)
     .all();
-
   for (auto &wAlarm : wAlarms)
   {
     std::cout << PiAlarm::StringHelper::toString(wAlarm) << std::endl;
@@ -209,12 +220,32 @@ int listAlarms(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm
 int showLogs(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
 {
   auto wLogs = litesql::select<db::Log>(*db)
-    .orderBy(db::Log::Id, false)
+    .orderBy(db::Log::Id)
     .all();
-
   for (auto &wLog : wLogs)
   {
     std::cout << PiAlarm::StringHelper::toString(wLog) << std::endl;
+  }
+  return 0;
+}
+
+
+int tailLogs(const std::vector<std::string> &args, std::shared_ptr<db::PiAlarm> db)
+{
+  SimOn::RealTimeApplication::initialize();
+
+  int wLastId = -1;
+  while(!SimOn::RealTimeApplication::isTerminated())
+  {
+    auto wLogs = litesql::select<db::Log>(*db, db::Log::Id > wLastId)
+      .orderBy(db::Log::Id)
+      .all();
+    for (auto &wLog : wLogs)
+    {
+      std::cout << PiAlarm::StringHelper::toString(wLog) << std::endl;
+      wLastId = wLog.id;
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
   return 0;
 }
@@ -284,8 +315,10 @@ static std::map<std::string, Command> COMMANDS = {
   { "notifiers.list", &listNotifiers },
   { "events.list", &listEvents },
   { "events.clear", &clearEvents },
+  { "events.tail", &tailEvents },
   { "alarms.list", &listAlarms },
-  { "logs", &showLogs },
+  { "logs.show", &showLogs },
+  { "logs.tail", &tailLogs },
   { "run", &run },
 };
 

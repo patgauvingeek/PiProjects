@@ -22,9 +22,6 @@ namespace PiAlarm
   db::Event AlarmSystem::insertEvent(int trigger)
   {
     db::Event wEvent(*mDB);
-    std::time_t wNow = std::time(nullptr);
-    std::localtime(&wNow);
-    wEvent.date = wNow;
     wEvent.trigger = trigger;
     wEvent.update();
     return wEvent;
@@ -47,9 +44,6 @@ namespace PiAlarm
   db::Alarm AlarmSystem::insertAlarm()
   {
     db::Alarm wAlarm(*mDB);
-    std::time_t wNow = std::time(nullptr);
-    std::localtime(&wNow);
-    wAlarm.date = wNow;
     wAlarm.note = "";
     wAlarm.update();
     return wAlarm;
@@ -77,9 +71,6 @@ namespace PiAlarm
   void AlarmSystem::log(std::string method, std::string what, int severity)
   {
     db::Log wLog(*mDB);
-    std::time_t wNow = std::time(nullptr);
-    std::localtime(&wNow);
-    wLog.date = wNow;
     wLog.severity = severity;
     wLog.method = method;
     wLog.what = what;
