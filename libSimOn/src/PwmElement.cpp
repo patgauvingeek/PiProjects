@@ -28,6 +28,7 @@ namespace SimOn
 
       ~PwmElementImpl()
       {
+        stop();
         std::stringstream filename;
         filename << PWM_FOLDER << "unexport";
         SysFsHelper::writeData(filename.str(), mPwm, "unexport PWM", mPwm);
