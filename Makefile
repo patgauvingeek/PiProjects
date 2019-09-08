@@ -46,4 +46,4 @@ logs: all
 
 update: clean
 		@echo "Updating pi..."
-		@scp -r libSimOn PiAlarm PiMorse Makefile 192.168.0.8:~/PiProjects
+		@rsync --progress -avzhe ssh libSimOn PiAlarm PiMorse music Makefile 192.168.0.8:~/PiProjects
