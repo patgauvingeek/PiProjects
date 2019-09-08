@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++11 -I../libSimOn/src -Wall -fexceptions
+CXXFLAGS = -std=c++14 -I../libSimOn/src -Wall -fexceptions
 LDFLAGS  = -L../lib/$(TARGET_ARCH) -lSimOn
 
 TARGET_DIR=../bin/$(TARGET_ARCH)

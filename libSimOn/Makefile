@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++11 -fPIC -Wall -fexceptions
+CXXFLAGS = -std=c++14 -fPIC -Wall -fexceptions
 LDFLAGS  = -shared -lcrypto
 
 TARGET_DIR=../lib/$(TARGET_ARCH)
