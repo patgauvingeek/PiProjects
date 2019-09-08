@@ -1,4 +1,4 @@
-PROJECTS := libSimOn PiAlarm PiMorse
+PROJECTS := libSimOn PiAlarm PiMorse music
 
 .PHONY: all $(PROJECTS)
 
@@ -11,6 +11,10 @@ PiMorse: libSimOn
 PiAlarm: libSimOn
 		@echo "=== PiAlarm ==="
 		@$(MAKE) $(OPT) -C PiAlarm --no-print-directory
+
+music: libSimOn
+		@echo "=== music ==="
+		@$(MAKE) $(OPT) -C music --no-print-directory
 
 libSimOn:
 		@echo "=== libSimOn ==="
