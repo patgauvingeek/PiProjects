@@ -3,6 +3,8 @@
 # $1 should be /sys/class/pwm/pwmchip0
 # $2 should be 0 or 1
 
+# sudo ./play.sh /sys/class/pwm/pwmchip0 0
+
 device=$1
 output=$2
 pwm=$device/pwm$output
@@ -41,6 +43,13 @@ play_note $g_period $g_duty_cyle 1
 play_note $a_period $a_duty_cyle 1
 play_note $b_period $b_duty_cyle 1
 play_note $c2_period $c2_duty_cyle 1
+play_note $b_period $b_duty_cyle 1
+play_note $a_period $a_duty_cyle 1
+play_note $g_period $g_duty_cyle 1
+play_note $f_period $f_duty_cyle 1
+play_note $e_period $e_duty_cyle 1
+play_note $d_period $d_duty_cyle 1
+play_note $c_period $c_duty_cyle 1
 
 echo shutting down...
 echo $output > $device/unexport
